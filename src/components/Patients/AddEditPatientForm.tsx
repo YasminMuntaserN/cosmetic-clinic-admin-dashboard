@@ -5,17 +5,39 @@ import {InputChips} from "../ui/InputChips.tsx";
 import {Button} from "../ui/Button.tsx";
 import toast from "react-hot-toast";
 import {Badge} from "../ui/Badge.tsx";
-import {useAddPatient} from "./hooks/usePatient.ts";
+import {useAddPatient, useUpdatePatient} from "./hooks/usePatient.ts";
 import {Patient} from "../../types/patient.ts";
 import MedicalHistory from "./MedicalHistory/MedicalHistory.tsx";
+import {Today} from "../../utils/constants.ts";
 
-export function AddEditPatientForm({onClose}: { onClose?: () => void }) {
-    const [ingredients, setIngredients] = useState<string[]>([]);
-    const methods = useForm<Patient>({defaultValues: {
-        medicalHistory: [{ condition: '', diagnosis: '', diagnosisDate: '', medications: [] }],
-            allergies: [],
+interface AddEditPatientFormProps{
+    selectedPatient? :Patient;
+    onClose?: () => void
+}
+
+export function AddEditPatientForm({selectedPatient,onClose}:AddEditPatientFormProps) {
+    const isAdd =selectedPatient === undefined ;
+    const [ingredients, setIngredients] = useState<string[]>(selectedPatient ? selectedPatient.allergies :[]);
+    const methods = useForm({defaultValues: {
+            firstName: selectedPatient?.firstName || '',
+            lastName: selectedPatient?.lastName || '',
+            email: selectedPatient?.email || '',
+            phone: selectedPatient?.phone || '',
+            address : {
+                city: selectedPatient?.address.city || '',
+                postalCode: selectedPatient?.address.postalCode || '',
+                country: selectedPatient?.address.country || '',
+                state: selectedPatient?.address.state || '',
+                street: selectedPatient?.address.street || '',
+            },
+            dateOfBirth: selectedPatient?.dateOfBirth || '',
+            gender:selectedPatient?.gender || '',
+            emergencyContact:selectedPatient?.emergencyContact || '',
+            medicalHistory:selectedPatient?.medicalHistory ||  [{ condition: '', diagnosis: '', diagnosisDate: '', medications: [] }],
+            allergies: selectedPatient?.allergies||[],
     }});
     const {AddPatient, isLoading, error} = useAddPatient();
+    const {UpdatePatient , updating, updateError } =useUpdatePatient();
     const {control, handleSubmit, register} =methods;
     
     const onSubmit = async (data: any) => {
@@ -23,31 +45,59 @@ export function AddEditPatientForm({onClose}: { onClose?: () => void }) {
             toast.error("Gender is required");
             return;
         }
-        const PatientData: Partial<Patient> = {
-            firstName: data.firstName,
-            lastName: data.lastName,
-            gender: data.gender,
-            phone: data.phone,
-            email: data.email,
-            medicalHistory: data.medicalHistory,
-            emergencyContact :data.emergencyContact,
-            address :data.address,
-            dateOfBirth :data.dateOfBirth,
-            allergies :ingredients
-        };
-        AddPatient({newData: PatientData}, {
-            onSuccess: () => {
-                onClose?.();
-                toast.success("Patient created successfully");
-            },
-            onError: () => {
-                toast.error("Patient creation failed");
-            }
-        });
+        if(isAdd) {
+            const PatientData: Partial<Patient> = {
+                firstName: data.firstName,
+                lastName: data.lastName,
+                gender: data.gender,
+                phone: data.phone,
+                email: data.email,
+                medicalHistory: data.medicalHistory,
+                emergencyContact: data.emergencyContact,
+                address: data.address,
+                dateOfBirth: data.dateOfBirth,
+                allergies: ingredients
+            };
+            AddPatient({newData: PatientData}, {
+                onSuccess: () => {
+                    onClose?.();
+                    toast.success("Patient created successfully");
+                },
+                onError: () => {
+                    toast.error("Patient creation failed");
+                }
+            });
+        }else{
+            const PatientData: Partial<Patient> = {
+                id:selectedPatient?.id,
+                userId : selectedPatient?.userId,
+                firstName: data.firstName,
+                lastName: data.lastName,
+                gender: data.gender,
+                phone: data.phone,
+                email: data.email,
+                medicalHistory: data.medicalHistory,
+                emergencyContact: data.emergencyContact,
+                address: data.address,
+                dateOfBirth: data.dateOfBirth,
+                allergies: ingredients,
+                updatedAt:Today,
+                createdAt:selectedPatient?.createdAt,
+            };
+            UpdatePatient({id:selectedPatient?.id, data: PatientData}, {
+                onSuccess: () => {
+                    onClose?.();
+                    toast.success("Patient updating successfully");
+                },
+                onError: () => {
+                    toast.error("Patient updated failed");
+                }
+            });
+        }
 
     }
 
-    if (error) return <p>Something wrong happened</p>
+    if (error ||updateError) return <p>Something wrong happened</p>
     
     return (
         <FormProvider {...methods}>
@@ -148,7 +198,7 @@ export function AddEditPatientForm({onClose}: { onClose?: () => void }) {
                         </fieldset>
                         <MedicalHistory/>
                         <Button type="submit" disabled={isLoading}>
-                            {isLoading ? "Loading..." : "Add Patient"}
+                            {isLoading || updating? "Loading..." :isAdd ?"Add Patient":"Save Changes"}
                         </Button>
                     </div>
                 </div>
