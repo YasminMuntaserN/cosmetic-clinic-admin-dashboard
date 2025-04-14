@@ -29,12 +29,12 @@ export function AddEditAppointmentForm({
 
     const onSubmit = (data: any) => {
         console.log(data);
-        console.log(data?.Patients?.id);
+        console.log(data?.Patients);
         if (isAdd) {
             const newAppointment = {
-                patientId: data?.Patients?.id,
-                doctorId: data?.Doctors?.id,
-                treatmentId: data?.Treatments?.id,
+                patientId: data?.Patients,
+                doctorId: data?.Doctors,
+                treatmentId: data?.Treatments,
                 scheduledDateTime: data?.scheduledDateTime,
                 durationMinutes: timeToMinutes(data.endTime) - timeToMinutes(data.startTime),
                 notes: data?.notes
