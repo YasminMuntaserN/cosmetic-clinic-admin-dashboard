@@ -1,8 +1,15 @@
 import {useMutation} from "@tanstack/react-query";
 import {Pagination, SearchCriteria} from "../../../types/Pagination.ts";
-import {addEntity, getAllBy, paginatedList, Search} from "../../../services/BaseApi.ts";
+import {
+    addEntity,
+    deleteEntity,
+    getAllBy,
+    getById,
+    paginatedList,
+    Search,
+    UpdateEntity
+} from "../../../services/BaseApi.ts";
 import {Product} from "../../../types/product.ts";
-
 
 export function useAddProduct() {
     const {
@@ -74,4 +81,40 @@ export function useSearchedProducts() {
         isLoading: status === "pending",
         error,
     };
+}
+
+export function useProduct(){
+    const { mutate :getProduct, data, status, error } = useMutation({
+        mutationFn:({id}:{id:string}):Promise<Product>=>getById("Products" ,id),
+        mutationKey:["Products"]
+    });
+
+    return { getProduct ,
+        product :data ,
+        isLoading: status === "pending",
+        error };
+}
+
+export function useUpdateProduct(){
+    const { mutate :UpdateProduct, data, status, error } = useMutation({
+        mutationFn:({id ,data}: {id :string ,data:Partial<Product>}):Promise<Product>=>UpdateEntity("Products",id ,data),
+        mutationKey:["Products"]
+    });
+
+    return { UpdateProduct ,
+        updatedProduct :data ,
+        updating: status === "pending",
+        updateError :error};
+}
+
+export function useDeleteProduct(){
+    const { mutate :deleteProduct, data, status, error } = useMutation({
+        mutationFn:({id}:{id:string}):Promise<Product>=>deleteEntity("Products" ,id),
+        mutationKey:["deleteProduct"]
+    });
+
+    return { deleteProduct ,
+        Product :data ,
+        isLoading: status === "pending",
+        error };
 }

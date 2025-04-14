@@ -1,7 +1,29 @@
 import {useMutation} from "@tanstack/react-query";
-import {addEntity, getAll, paginatedList, Search} from "../../../services/BaseApi.ts";
+import {
+    addEntity,
+    deleteEntity,
+    getAll,
+    getAllBy,
+    getById,
+    paginatedList,
+    Search,
+    UpdateEntity
+} from "../../../services/BaseApi.ts";
 import {Pagination, SearchCriteria} from "../../../types/Pagination.ts";
 import {Doctor} from "../../../types/doctor.ts";
+import {Appointment} from "../../../types/Appointment.ts";
+
+export function useDoctor(){
+    const { mutate :getDoctor, data, status, error } = useMutation({
+        mutationFn:({id}:{id:string}):Promise<Doctor>=>getById("Doctors" ,id),
+        mutationKey:["doctors"]
+    });
+
+    return { getDoctor ,
+        doctor :data ,
+        isLoading: status === "pending",
+        error };
+}
 
 export function useDoctorsList(){
     const { mutate :getDoctorsList, data, status, error } = useMutation({
@@ -59,4 +81,40 @@ export function useSearchedDoctors() {
         isLoading: status === "pending",
         error,
     };
+}
+
+export function useDoctorAppointments(){
+    const { mutate :getDoctorAppointments, data, status, error } = useMutation({
+        mutationFn:(id:string) :Promise <Appointment[]> =>getAllBy("Appointments" , `doctorId/${id}`),
+        mutationKey:["doctorAppointments"]
+    });
+
+    return { getDoctorAppointments ,
+        doctorAppointments :data ??[],
+        isLoading: status === "pending",
+        error };
+}
+
+export function useDeleteDoctor(){
+    const { mutate :deleteDoctor, data, status, error } = useMutation({
+        mutationFn:({id}:{id:string}):Promise<Doctor>=>deleteEntity("Doctors" ,id),
+        mutationKey:["deleteDoctors"]
+    });
+
+    return { deleteDoctor ,
+        doctor :data ,
+        isLoading: status === "pending",
+        error };
+}
+
+export function useUpdateDoctor(){
+    const { mutate :UpdateDoctor, data, status, error } = useMutation({
+        mutationFn:({id ,data}: {id :string ,data:Partial<Doctor>}):Promise<Doctor>=>UpdateEntity("Doctors",id ,data),
+        mutationKey:["doctors"]
+    });
+
+    return { UpdateDoctor ,
+        updatedDoctor :data ,
+        updating: status === "pending",
+        updateError :error};
 }

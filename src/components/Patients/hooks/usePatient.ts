@@ -1,7 +1,27 @@
 import {useMutation} from "@tanstack/react-query";
-import {addEntity, paginatedList, Search} from "../../../services/BaseApi.ts";
+import {
+    addEntity,
+    deleteEntity,
+    getAllBy,
+    getById,
+    paginatedList,
+    Search,
+    UpdateEntity
+} from "../../../services/BaseApi.ts";
 import {Pagination, SearchCriteria} from "../../../types/Pagination.ts";
 import {Patient} from "../../../types/patient.ts";
+import {Appointment} from "../../../types/Appointment.ts";
+
+export function usePatient(){
+    const { mutate :getPatient, data, status, error } = useMutation({
+        mutationFn:({id}:{id:string}):Promise<Patient>=>getById("Patients" ,id),
+        mutationKey:["patient"]
+    });
+    return { getPatient ,
+        patient :data ,
+        isLoading: status === "pending",
+        error };
+}
 
 export function useAddPatient() {
     const {
@@ -53,4 +73,40 @@ export function useSearchedPatients() {
         isLoading: status === "pending",
         error,
     };
+}
+
+export function useDeletePatient(){
+    const { mutate :deletePatient, data, status, error } = useMutation({
+        mutationFn:({id}:{id:string}):Promise<Patient>=>deleteEntity("Patients" ,id),
+        mutationKey:["deletePatients"]
+    });
+
+    return { deletePatient ,
+        Patient :data ,
+        isLoading: status === "pending",
+        error };
+}
+
+export function usePatientAppointments(){
+    const { mutate :getPatientAppointments, data, status, error } = useMutation({
+        mutationFn:(id:string) :Promise <Appointment[]> =>getAllBy("Appointments" , `patientId/${id}`),
+        mutationKey:["patientAppointments"]
+    });
+
+    return { getPatientAppointments ,
+        PatientAppointments :data ??[],
+        isLoading: status === "pending",
+        error };
+}
+
+export function useUpdatePatient(){
+    const { mutate :UpdatePatient, data, status, error } = useMutation({
+        mutationFn:({id ,data}: {id :string ,data:Partial<Patient>}):Promise<Patient>=>UpdateEntity("Patients",id ,data),
+        mutationKey:["Patients"]
+    });
+
+    return { UpdatePatient ,
+        updatedPatient :data ,
+        updating: status === "pending",
+        updateError :error};
 }

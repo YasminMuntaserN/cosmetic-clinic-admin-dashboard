@@ -1,7 +1,16 @@
 import {useMutation} from "@tanstack/react-query";
 import {Pagination, SearchCriteria} from "../../../types/Pagination.ts";
-import {addEntity, getAllBy, paginatedList, Search} from "../../../services/BaseApi.ts";
+import {
+    addEntity,
+    deleteEntity,
+    getAllBy,
+    getById,
+    paginatedList,
+    Search,
+    UpdateEntity
+} from "../../../services/BaseApi.ts";
 import {Treatment} from "../../../types/treatment.ts";
+import {Appointment} from "../../../types/Appointment.ts";
 
 export function useAddTreatment() {
     const {
@@ -73,4 +82,52 @@ export function useSearchedTreatments() {
         isLoading: status === "pending",
         error,
     };
+}
+
+export function useTreatment(){
+    const { mutate :getTreatment, data, status, error } = useMutation({
+        mutationFn:({id}:{id:string}):Promise<Treatment>=>getById("Treatments" ,id),
+        mutationKey:["Treatments"]
+    });
+
+    return { getTreatment ,
+        treatment :data ,
+        isLoading: status === "pending",
+        error };
+}
+
+export function useTreatmentAppointments(){
+    const { mutate :getTreatmentAppointments, data, status, error } = useMutation({
+        mutationFn:(id:string) :Promise <Appointment[]> =>getAllBy("Appointments" , `treatmentId/${id}`),
+        mutationKey:["TreatmentAppointments"]
+    });
+
+    return { getTreatmentAppointments ,
+        treatmentAppointments :data ??[],
+        isLoadingTratments: status === "pending",
+        errorTreatments:error };
+}
+
+export function useUpdateTreatment(){
+    const { mutate :UpdateTreatment, data, status, error } = useMutation({
+        mutationFn:({id ,data}: {id :string ,data:Partial<Treatment>}):Promise<Treatment>=>UpdateEntity("Treatments",id ,data),
+        mutationKey:["Treatments"]
+    });
+
+    return { UpdateTreatment ,
+        updatedTreatment :data ,
+        updating: status === "pending",
+        updateError :error};
+}
+
+export function useDeleteTreatment(){
+    const { mutate :deleteTreatment, data, status, error } = useMutation({
+        mutationFn:({id}:{id:string}):Promise<Treatment>=>deleteEntity("Treatments" ,id),
+        mutationKey:["deleteTreatment"]
+    });
+
+    return { deleteTreatment ,
+        Treatment :data ,
+        isLoading: status === "pending",
+        error };
 }
