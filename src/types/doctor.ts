@@ -17,4 +17,5 @@ export interface Doctor {
     workingHours: WorkingHours[];
     createdAt: string;
     updatedAt: string;
+    userId?:string;
 }
