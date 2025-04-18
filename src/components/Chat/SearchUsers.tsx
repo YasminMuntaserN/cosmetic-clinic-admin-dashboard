@@ -51,7 +51,6 @@ export function SearchUsers() {
   }, [
     debouncedSearchTerm,
     activeTab,
-    
     users,
     setFilteredConversations,
     setFilteredUsers

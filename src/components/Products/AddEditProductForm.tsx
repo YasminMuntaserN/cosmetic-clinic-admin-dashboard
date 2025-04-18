@@ -8,6 +8,8 @@ import {Button} from "../ui/Button.tsx";
 import {useAddProduct, useUpdateProduct} from "./hooks/useProduct.ts";
 import toast from "react-hot-toast";
 import {uploadImage} from "../../services/SupabaseService.ts";
+import {ButtonLoader} from "../ui/Loading.tsx";
+import {ErrorMessage} from "../ui/ErrorMessage.tsx";
 
 
 interface AddEditProductFormProps{
@@ -102,7 +104,7 @@ export function AddEditProductForm({selectedProduct, onClose}:AddEditProductForm
         
     }
     
-    if(error || updateError) return <p>Something wrong happened</p>
+    if(error || updateError) return <ErrorMessage />;
     return (
         <form className="text-gray-900 font-slab" onSubmit={handleSubmit(onSubmit)}>
             <h3 className="text-2xl font-bold text-secondary mb-5 "> {isAdd ? "Add Product" :selectedProduct?.name}</h3>
@@ -133,11 +135,11 @@ export function AddEditProductForm({selectedProduct, onClose}:AddEditProductForm
                            component="textarea"/>
                 </div>
                 <div className="bg-gray-50 rounded-xl shadow-lg p-3 space-y-6">
-                    <InputChips name="Side Effects"  handleData ={setSideEffects} data={sideEffects}/>
-                    <InputChips name="Ingredients" handleData ={setIngredients} data={ingredients}/>
+                    <InputChips name="Side Effects"  handleData ={setSideEffects} data={sideEffects}  required={true}/>
+                    <InputChips name="Ingredients" handleData ={setIngredients} data={ingredients}  required={true}/>
                     <ImageUploader onFileSelected={setImage} name="Product" defaultImage={selectedProduct?.imageUrl}/>
                     <Button type="submit">
-                        {isLoading ||updating ? "loading..." : isAdd ? "Add Product" :"Save changes" }
+                        {isLoading ||updating ? <><ButtonLoader /> loading...</> : isAdd ? "Add Product" :"Save changes" }
                     </Button>
                 </div>
             </div>

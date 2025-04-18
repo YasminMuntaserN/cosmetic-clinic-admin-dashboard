@@ -5,7 +5,7 @@ import {Delete} from "./Delete.tsx";
 interface DeleteModalProps {
     id: string;
     button: ReactNode;
-    dataType: "product" | "treatment" |"patient" |"doctor";
+    dataType: "product" | "treatment" |"patient" |"doctor" |"appointment";
 }
 
 export function DeleteModal({ id, button, dataType }: DeleteModalProps) {

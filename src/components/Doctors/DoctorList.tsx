@@ -2,6 +2,7 @@ import type { Doctor } from '../../types/doctor';
 import {Column, Table} from "../ui/Table.tsx";
 import {Badge} from "../ui/Badge.tsx";
 import {format} from "date-fns";
+import {useNavigate} from "react-router-dom";
 
 
 interface DoctorListProps {
@@ -23,6 +24,8 @@ export function DoctorList({
                pageSize,
                isLoading = false
            }: DoctorListProps) {
+    
+    const navigate = useNavigate();
     const columns: Column<Doctor>[] = [
         {
             key: 'imageUrl',
@@ -70,8 +73,7 @@ export function DoctorList({
     ];
 
     const handleRowClick = (doctor: Doctor) => {
-        console.log('Selected doctor:', doctor);
-        // Implement your row click handler
+        navigate(`/doctorProfile/${doctor.id}`);
     };
 
     return (

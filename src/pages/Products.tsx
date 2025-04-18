@@ -11,6 +11,7 @@ import {Modal} from "../components/ui/Modal.tsx";
 import {AddModal} from "../components/ui/AddModal.tsx";
 import {AddEditProductForm} from "../components/Products/AddEditProductForm.tsx";
 import {useClinic} from "../context/ClinicContext.tsx";
+import {ErrorMessage} from "../components/ui/ErrorMessage.tsx";
 
 
 export function Products() {
@@ -74,7 +75,7 @@ export function Products() {
         setCurrentPage(1);
     };
 
-    if (error || productsCategoryError || SearchedProductsError) return <p>Something get wrong</p>
+    if (error || productsCategoryError || SearchedProductsError) return <ErrorMessage />;
 
     return (
         <Modal>

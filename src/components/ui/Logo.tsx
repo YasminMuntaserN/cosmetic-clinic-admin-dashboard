@@ -1,5 +1,5 @@
-export function Logo(){
+  export function Logo({style}  :{style?:string} ){
   return (
-      <img src="./logo.png" alt="logo" className='my-5'/>
+      <img src="/logo.png" alt="logo" className={style ? style :'my-5'}/>
   )
 }

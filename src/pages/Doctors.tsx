@@ -2,12 +2,13 @@ import {useEffect, useState} from 'react';
 import {DoctorList} from "../components/Doctors/DoctorList.tsx";
 import {PAGE_SIZE} from "../utils/constants.ts";
 import {usePaginatedDoctorsList, useSearchedDoctors} from "../components/Doctors/hooks/useDoctor.ts";
-import {useSearch} from "../context/SearchContext.tsx";
+import {useClinic} from "../context/ClinicContext.tsx";
 import {PaginatedResponse} from "../types/Pagination.ts";
 import {Doctor} from "../types/doctor.ts";
 import {AddModal} from "../components/ui/AddModal.tsx";
 import {Modal} from "../components/ui/Modal.tsx";
 import {AddEditDoctorForm} from "../components/Doctors/AddEditDoctorForm.tsx";
+import {ErrorMessage} from "../components/ui/ErrorMessage.tsx";
 
 
 export function Doctors() {
@@ -16,7 +17,7 @@ export function Doctors() {
     const [ascending, setAscending] = useState(true);
     const [doctorList, setDoctorList] = useState<Doctor[]>([]);
     const {getPaginatedDoctorsList, totalCount, isLoading, error} = usePaginatedDoctorsList();
-    const {search} = useSearch();
+    const {search} = useClinic();
     const {
         getSearchedDoctors,
         isLoading: SearchedDoctorsLoading,
@@ -56,7 +57,7 @@ export function Doctors() {
         setCurrentPage(1);
     };
 
-    if (error || SearchedDoctorsError) return <p>Something get wrong</p>
+    if (error || SearchedDoctorsError) return <ErrorMessage />;
 
     return (
         <Modal>

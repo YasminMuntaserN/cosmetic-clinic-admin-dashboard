@@ -8,6 +8,8 @@ import toast from "react-hot-toast";
 import {uploadImage} from "../../services/SupabaseService.ts";
 import {CategoriesOptions, Treatment} from "../../types/treatment.ts";
 import {useAddTreatment, useUpdateTreatment} from "./hooks/useTreatment.ts";
+import {ButtonLoader} from "../ui/Loading.tsx";
+import {ErrorMessage} from "../ui/ErrorMessage.tsx";
 
 interface AddEditTreatmentFormProps{
     selectedTreatment? :Treatment;
@@ -105,7 +107,7 @@ export function AddEditTreatmentForm({selectedTreatment,onClose}:AddEditTreatmen
         
     }
     
-    if(error || updateError) return <p>Something wrong happened</p>
+    if(error || updateError) return <ErrorMessage />;
     return (
         <form className="text-gray-900 font-slab" onSubmit={handleSubmit(onSubmit)}>
             <h3 className="text-2xl font-bold text-secondary mb-5 ">{isAdd?"Add Treatment" :selectedTreatment?.name}</h3>
@@ -130,12 +132,12 @@ export function AddEditTreatmentForm({selectedTreatment,onClose}:AddEditTreatmen
                 <ImageUploader onFileSelected={setImage} name="Treatment" defaultImage={selectedTreatment?.imageUrl}/>
                 </div>
                 <div className="bg-gray-50 rounded-xl shadow-lg p-3 space-y-6">
-                    <InputChips name="Required Equipments"  handleData ={setRequiredEquipments} data={requiredEquipments}/>
-                    <InputChips name="PreRequisites" handleData ={setPreRequisites} data={preRequisites}/>
-                    <InputChips name="After Care"  handleData ={setAfterCares} data={afterCare}/>
-                    <InputChips name="Risks" handleData ={setRisks} data={risks}/>
+                    <InputChips name="Required Equipments"  handleData ={setRequiredEquipments} data={requiredEquipments} required={true}/>
+                    <InputChips name="PreRequisites" handleData ={setPreRequisites} data={preRequisites}  required={true}/>
+                    <InputChips name="After Care"  handleData ={setAfterCares} data={afterCare}  required={true}/>
+                    <InputChips name="Risks" handleData ={setRisks} data={risks}  required={true}/>
                     <Button type="submit">
-                        {isLoading || updating ? "loading..." : isAdd ?"Add Treatment" : "Save Changes"}
+                        {isLoading || updating ? <><ButtonLoader />loading...</> : isAdd ?"Add Treatment" : "Save Changes"}
                     </Button>
                 </div>
             </div>

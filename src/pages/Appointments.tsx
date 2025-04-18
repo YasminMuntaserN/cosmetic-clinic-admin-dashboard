@@ -3,6 +3,8 @@ import {useAppointments} from "../components/Appointments/hooks/useAppointment.t
 import {useEffect, useState} from "react";
 import {Modal} from "../components/ui/Modal.tsx";
 import {Appointment} from "../types/Appointment.ts";
+import {Loading} from "../components/ui/Loading.tsx";
+import {ErrorMessage} from "../components/ui/ErrorMessage.tsx";
 
 export function Appointments() {
     const {getAppointments, Appointments, error, isLoading} = useAppointments();
@@ -12,11 +14,11 @@ export function Appointments() {
         getAppointments()
     }, []);
 
-    if (error) return <p>Something wrong happened</p>
+    if (error) return <ErrorMessage />;
     
     return (
         <Modal action={()=>setSelectedAppointment(null)}>
-            {isLoading ? <p>loading....</p> :
+            {isLoading ? <Loading />:
             <Calendar selectedAppointment={selectedAppointment} setSelectedAppointment={setSelectedAppointment} appointments={Appointments ?? []}/>
             }
             </Modal>

@@ -9,6 +9,8 @@ import {useAddPatient, useUpdatePatient} from "./hooks/usePatient.ts";
 import {Patient} from "../../types/patient.ts";
 import MedicalHistory from "./MedicalHistory/MedicalHistory.tsx";
 import {Today} from "../../utils/constants.ts";
+import {ButtonLoader} from "../ui/Loading.tsx";
+import {ErrorMessage} from "../ui/ErrorMessage.tsx";
 
 interface AddEditPatientFormProps{
     selectedPatient? :Patient;
@@ -97,7 +99,7 @@ export function AddEditPatientForm({selectedPatient,onClose}:AddEditPatientFormP
 
     }
 
-    if (error ||updateError) return <p>Something wrong happened</p>
+    if (error ||updateError) return <ErrorMessage />;
     
     return (
         <FormProvider {...methods}>
@@ -182,7 +184,7 @@ export function AddEditPatientForm({selectedPatient,onClose}:AddEditPatientFormP
                                 </label>
                             </div>
                         </div>
-                        <InputChips name="Ingredients" handleData={setIngredients} data={ingredients}/>
+                        <InputChips name="Ingredients" handleData={setIngredients} data={ingredients}  required={true}/>
                     </div>
 
                     <div className="bg-gray-50 rounded-xl shadow-lg w-full p-3 space-y-6 ">
@@ -198,7 +200,7 @@ export function AddEditPatientForm({selectedPatient,onClose}:AddEditPatientFormP
                         </fieldset>
                         <MedicalHistory/>
                         <Button type="submit" disabled={isLoading}>
-                            {isLoading || updating? "Loading..." :isAdd ?"Add Patient":"Save Changes"}
+                            {isLoading || updating? <>< ButtonLoader /> Loading...</> :isAdd ?"Add Patient":"Save Changes"}
                         </Button>
                     </div>
                 </div>

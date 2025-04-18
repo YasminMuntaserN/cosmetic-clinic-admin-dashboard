@@ -10,6 +10,8 @@ import {WorkingHoursInput} from "./WorkingHoursInput.tsx";
 import toast from "react-hot-toast";
 import {DAYS_OF_WEEK, Today} from "../../utils/constants.ts";
 import {Badge} from "../ui/Badge.tsx";
+import {ButtonLoader} from "../ui/Loading.tsx";
+import {ErrorMessage} from "../ui/ErrorMessage.tsx";
 
 interface AddEditDoctorFormProps{
     selectedDoctor? :Doctor;
@@ -132,7 +134,7 @@ export function AddEditDoctorForm({selectedDoctor ,onClose} :AddEditDoctorFormPr
         }
     };
 
-    if(error || updateError) return <p>something get wrong</p>
+    if(error || updateError) return  <ErrorMessage />;
    
     return (
         <FormProvider {...methods}>
@@ -207,7 +209,7 @@ export function AddEditDoctorForm({selectedDoctor ,onClose} :AddEditDoctorFormPr
                     <div>
                         <WorkingHoursInput/>
                         <Button type="submit">
-                            {isLoading || updating ? "loading..." : isAdd ? "Add Doctor" : "Save Changes"}
+                            {isLoading || updating ?<> <ButtonLoader /> loading .. </>  : isAdd ? "Add Doctor" : "Save Changes"}
                         </Button>
                     </div>
                 </div>

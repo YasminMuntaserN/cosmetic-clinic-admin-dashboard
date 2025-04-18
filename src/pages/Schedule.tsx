@@ -5,6 +5,7 @@ import {Appointment} from "../types/Appointment.ts";
 import {useEffect} from "react";
 import {useTodaySchedule} from "../components/Appointments/hooks/useAppointment.ts";
 import {Calendar, MessageSquarePlus} from "lucide-react";
+import {ErrorMessage} from "../components/ui/ErrorMessage.tsx";
 
 
 export function Schedule() {
@@ -49,7 +50,7 @@ export function Schedule() {
         getTodaySchedule();
     }, []);
     
-    if(error) return <p>Something worng happend</p>
+    if(error) return <ErrorMessage />;
     return (
         <div className="space-y-12 font-slab" >
             <div className="flex items-center justify-between mx-10">

@@ -1,6 +1,7 @@
 import {Column, Table} from "../ui/Table.tsx";
 import {Badge} from "../ui/Badge.tsx";
 import {Patient} from "../../types/patient.ts";
+import {useNavigate} from "react-router-dom";
 
 
 interface PatientListProps {
@@ -22,6 +23,7 @@ export function PatientList({
                                 pageSize,
                                 isLoading = false
                             }: PatientListProps) {
+    const navigate = useNavigate();
     const columns: Column<Patient>[] = [
         {
             key: 'firstName',
@@ -84,8 +86,7 @@ export function PatientList({
         }
     ];
     const handleRowClick = (Patient: Patient) => {
-        console.log('Selected Patient:', Patient);
-        // Implement your row click handler
+        navigate(`/patientProfile/${Patient.id}`);
     };
 
     return (

@@ -3,6 +3,8 @@ import {useForm} from "react-hook-form";
 import {Button} from "../ui/Button.tsx";
 import {useChangePassword} from "./useUser.ts";
 import toast from "react-hot-toast";
+import {Loading} from "../ui/Loading.tsx";
+import {ErrorMessage} from "../ui/ErrorMessage.tsx";
 
 type PasswordForm = {
     currentPassword: string;
@@ -30,8 +32,9 @@ export function ChangePassword({userId}: { userId: string | undefined }) {
 
     const password = watch("password");
 
-    if(error) return <p>something get wrong..</p>
-    if(isLoading) return <p>Loading...</p>
+    if(error) return <ErrorMessage />;
+    
+    if(isLoading) return <Loading />;
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
             <h2 className="text-2xl font-semibold">Change Password</h2>

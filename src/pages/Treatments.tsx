@@ -11,6 +11,7 @@ import {Treatment} from "../types/treatment.ts";
 import {Modal} from "../components/ui/Modal.tsx";
 import {AddModal} from "../components/ui/AddModal.tsx";
 import {AddEditTreatmentForm} from "../components/Treatments/AddEditTreatmentForm.tsx";
+import {ErrorMessage} from "../components/ui/ErrorMessage.tsx";
 
 export  function  Treatments() {
     const [currentPage, setCurrentPage] = useState(1);
@@ -72,7 +73,7 @@ export  function  Treatments() {
         setCurrentPage(1);
     };
 
-    if (error || TreatmentsCategoryError || SearchedTreatmentsError) return <p>Something get wrong</p>
+    if (error || TreatmentsCategoryError || SearchedTreatmentsError) return <ErrorMessage />;
 
     return (
         <Modal>

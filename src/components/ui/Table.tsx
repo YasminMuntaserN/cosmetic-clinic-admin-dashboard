@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {ChevronDown, ChevronUp, ChevronsUpDown} from 'lucide-react';
 import {cn} from '../../utils/cn';
 import {Pagination} from "./Pagination.tsx";
+import {Loading} from "./Loading.tsx";
 
 export interface Column<T> {
     key: string;
@@ -44,7 +45,6 @@ export function Table<T>({
                              sortable = true,
                              onSort,
                          }: TableProps<T>) {
-    console.log(columns);
     const [sortConfig, setSortConfig] = useState<{
         key: string;
         direction: SortDirection;
@@ -93,13 +93,7 @@ export function Table<T>({
         return <ChevronsUpDown className="w-4 h-4 text-gray-400"/>;
     };
 
-    if (isLoading) {
-        return (
-            <div className="flex items-center justify-center p-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            </div>
-        );
-    }
+    if (isLoading)  return <Loading /> ;
 
     return (
         <div className="w-full font-slab ">

@@ -6,11 +6,12 @@ import toast from "react-hot-toast";
 import {useDeletePatient} from "../Patients/hooks/usePatient.ts";
 import {useNavigate} from "react-router-dom";
 import {useDeleteDoctor} from "../Doctors/hooks/useDoctor.ts";
+import {useDeleteAppointment} from "../Appointments/hooks/useAppointment.ts";
 
 
 interface DeleteProps {
     id: string;
-    dataType: "product" | "treatment" |"patient" |"doctor";
+    dataType: "product" | "treatment" |"patient" |"doctor" |"appointment";
     onClose?: () => void;
 }
 
@@ -35,6 +36,7 @@ export function Delete({id,  dataType, onClose } :DeleteProps) {
     } = useDeletePatient();
 
     const {deleteDoctor, isLoading :doctorDeleting, error:doctorError} = useDeleteDoctor();
+    const {deleteAppointment, isLoading :appointmentDeleting, error:appointmentError} = useDeleteAppointment();
     
     const navigate = useNavigate();
 
@@ -43,6 +45,7 @@ export function Delete({id,  dataType, onClose } :DeleteProps) {
         treatment: deleteTreatment,
         patient: deletePatient,
         doctor: deleteDoctor,
+        appointment :deleteAppointment
     };
     
     const handleDelete = () => {
@@ -64,7 +67,7 @@ export function Delete({id,  dataType, onClose } :DeleteProps) {
         );
     };
 
-    if (productError || treatmentError || patientError ||doctorError) return <p className="text-red-600">Something went wrong.</p>;
+    if (productError || treatmentError || patientError ||doctorError || appointmentError) return <p className="text-red-600">Something went wrong.</p>;
     
     return (
         <div className="flex flex-col items-center gap-6  text-center font-slab">
@@ -77,7 +80,7 @@ export function Delete({id,  dataType, onClose } :DeleteProps) {
             </p>
             <div className="flex justify-center gap-4 mt-4">
                 <Button variant="DeleteButton" onClick={handleDelete}>
-                    {productDeleting || treatmentDeleting || patientDeleting || doctorDeleting ? "Deleting..." :"Delete" }
+                    {productDeleting || treatmentDeleting || patientDeleting || doctorDeleting || appointmentDeleting ? "Deleting..." :"Delete" }
                 </Button>
                 <Button variant="CancleButton" onClick={onClose}>
                     Cancel

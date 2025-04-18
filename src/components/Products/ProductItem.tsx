@@ -7,8 +7,7 @@ interface ProductProps {
 export function ProductItem({product}:ProductProps) {
     return (
         <div
-            key={product.id}
-            className="relative rounded-lg border bg-white px-6 py-5 shadow-basic shadow-sm hover:shadow-md transition-shadow"
+            className="relative rounded-lg border bg-white px-6 py-5 shadow-basic shadow-sm hover:shadow-md transition-shadow "
         >
             <div className="aspect-w-3 aspect-h-2 mb-4">
                 <img
@@ -25,7 +24,7 @@ export function ProductItem({product}:ProductProps) {
                 <p className="text-lg font-semibold text-gray-900">${product.price}</p>
                 <p className="text-sm text-gray-500">{product.stockQuantity} in stock</p>
             </div>
-            <EditView />
+            <EditView type="product" Id={product?.id} data={product}/>
         </div>
     )
 }

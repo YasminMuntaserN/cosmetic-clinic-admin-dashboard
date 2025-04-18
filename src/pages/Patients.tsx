@@ -9,6 +9,7 @@ import {PatientList} from "../components/Patients/PatientList.tsx";
 import {AddModal} from "../components/ui/AddModal.tsx";
 import {Modal} from "../components/ui/Modal.tsx";
 import {AddEditPatientForm} from "../components/Patients/AddEditPatientForm.tsx";
+import {ErrorMessage} from "../components/ui/ErrorMessage.tsx";
 
 export function Patients() {
     const [currentPage, setCurrentPage] = useState(1);
@@ -56,7 +57,7 @@ export function Patients() {
         setCurrentPage(1);
     };
 
-    if (error || SearchedPatientsError) return <p>Something get wrong</p>
+    if (error || SearchedPatientsError) return <ErrorMessage />;
 
     return (
         <Modal>

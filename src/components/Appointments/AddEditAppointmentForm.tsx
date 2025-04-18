@@ -1,14 +1,14 @@
 import {Appointment, AppointmentStatus} from "../../types/Appointment.ts";
 import {FormProvider, useForm} from "react-hook-form";
 import {Selector} from "../ui/Selector.tsx";
-import {useEffect} from "react";
 import {useAddAppointment, useUpdateAppointment} from "./hooks/useAppointment.ts";
-import {timeToMinutes} from "../../utils/helper.ts";
+import {formatTime, getEndDateTime, getStartDateTime, timeToMinutes} from "../../utils/helper.ts";
 import {Today} from "../../utils/constants.ts";
 import {Button} from "../ui/Button.tsx";
 import {TimeInput} from "../ui/TimeInput.tsx";
 import AddPatientForAppointment from "./AddPatientForAppointment.tsx";
 import {GoToChatButton} from "../Chat/GoToChatButton.tsx";
+import {ErrorMessage} from "../ui/ErrorMessage.tsx";
 
 interface AddEditAppointmentFormProps {
     selectedAppointment?: Appointment | null;
@@ -22,14 +22,35 @@ export function AddEditAppointmentForm({
                                            onClose
                                        }: AddEditAppointmentFormProps) {
     const isAdd = selectedAppointment === undefined;
-    const methods = useForm();
-    const {register, handleSubmit, setValue, watch, formState: {errors}} =methods;
+
+    const methods = useForm({
+        defaultValues: {
+            patientId: selectedAppointment?.patientId || '',
+            doctorId: selectedAppointment?.doctorId || '',
+            treatmentId: selectedAppointment?.treatmentId || '',
+            scheduledDateTime: selectedAppointment?.scheduledDateTime
+                ? new Date(selectedAppointment.scheduledDateTime).toISOString().split("T")[0]
+                : "",
+            startTime: formatTime(getStartDateTime(
+                selectedAppointment?.scheduledDateTime
+                    ? new Date(selectedAppointment.scheduledDateTime)
+                    : undefined
+            )),
+            endTime: formatTime(getEndDateTime(
+                selectedAppointment?.scheduledDateTime
+                    ? new Date(selectedAppointment.scheduledDateTime)
+                    : undefined,
+                selectedAppointment?.durationMinutes
+            )),
+            status :selectedAppointment?.status  || '',
+            notes: selectedAppointment?.notes || ''
+        }
+    });
+    const {register, handleSubmit,  formState: {errors}} =methods;
     const {updateAppointment, isLoading: updating, error: updateError} = useUpdateAppointment();
     const {AddAppointment, isLoading: Adding, error: AddError} = useAddAppointment();
 
     const onSubmit = (data: any) => {
-        console.log(data);
-        console.log(data?.Patients);
         if (isAdd) {
             const newAppointment = {
                 patientId: data?.Patients,
@@ -75,18 +96,8 @@ export function AddEditAppointmentForm({
             );
         }
     };
-
-    useEffect(() => {
-        if (selectedAppointment) {
-            setValue("patientName", selectedAppointment.patientName);
-            setValue("doctorName", selectedAppointment.doctorName);
-            setValue("scheduledDateTime", selectedAppointment.scheduledDateTime);
-            setValue("status", selectedAppointment.status);
-            setValue("notes", selectedAppointment.notes || "");
-        }
-    }, [selectedAppointment, setValue]);
-
-    if (updateError || AddError) return <p>something get wrong</p>
+    
+    if (updateError || AddError) return <ErrorMessage />;
 
     return (
         <FormProvider {...methods}>
@@ -133,7 +144,7 @@ export function AddEditAppointmentForm({
                             type="date"
                             {...register("scheduledDateTime", {
                                 required: "Please select a date",
-                                validate: (value) => value >= Today || "Date cannot be in the past",
+                                validate: (value) => value>= Today || "Date cannot be in the past",
                             })}
                             min={Today}
                             className={StyledInput}
@@ -146,11 +157,11 @@ export function AddEditAppointmentForm({
                     <div className="flex form-group space-x-8 flex-row ">
                         <div className={Box}>
                             <label className={StyledLabel}>Start Time:</label>
-                            <TimeInput name="startTime" time="Start" register={register} watch={watch} errors={errors}/>
+                            <TimeInput name="startTime" time="Start" />
                         </div>
                         <div className={Box}>
                             <label className={StyledLabel}>End Time:</label>
-                            <TimeInput name="endTime" time="End" register={register} watch={watch} errors={errors}/>
+                            <TimeInput name="endTime" time="End" />
                         </div>
                     </div>
 

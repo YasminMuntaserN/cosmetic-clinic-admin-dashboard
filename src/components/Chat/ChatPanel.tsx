@@ -8,7 +8,6 @@ import {ActiveTab} from "../../types/chat.ts";
 
 export function ChatPanel() {
     const { selectedUser, activeTab } = useChat();
-
     return (
         <div className="flex flex-col lg:flex-row h-screen bg-gray-100">
             <div className="w-full lg:w-80 bg-white border-b lg:border-r border-gray-200">
