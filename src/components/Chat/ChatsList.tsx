@@ -6,8 +6,6 @@ import {Avatar} from "../ui/Avatar.tsx";
 
 function ChatsList() {
     const { filteredConversations, selectedUser, selectUser,messages ,markMessageAsRead  } = useChat();
-
-    console.log(filteredConversations);
     
     useEffect(() => {
         if (selectedUser) {

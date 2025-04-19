@@ -5,6 +5,7 @@ import {Message, Conversation, ChatContextState, ActiveTab, UserStatus} from '..
 import { useParams } from 'react-router-dom';
 import {getAll, getAllBy} from "../services/BaseApi.ts";
 import { User} from "../types/User.ts";
+import {useClinic} from "./ClinicContext.tsx";
 
 interface ChatContextType extends ChatContextState {
   sendMessage: (receiverId: string, content: string) => Promise<void>;
@@ -16,6 +17,7 @@ interface ChatContextType extends ChatContextState {
   setFilteredUsers: (users: User[]) => void;
   activeTab: ActiveTab;
   setActiveTab: (activeTab: ActiveTab) => void;
+  userId:string;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -26,11 +28,11 @@ interface ChatProviderProps {
 
 
 export function ChatProvider({ children }: ChatProviderProps) {
-  const { userId } = useParams<{ userId: string }>();
+  const { userId } = useParams<{ userId: string; }>();
   const signalR = useSignalR();
   const queryClient = useQueryClient();
+  const {selectedUser, setSelectedUser} =useClinic();
   const [activeTab, setActiveTab] = useState<ActiveTab>(ActiveTab.chats);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [filteredConversations, setFilteredConversations] = useState<Conversation[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
 
@@ -50,7 +52,6 @@ export function ChatProvider({ children }: ChatProviderProps) {
     enabled: !!selectedUser
   });
   
-
   useEffect(() => {
     setFilteredConversations(conversations);
   }, [conversations]);
@@ -114,9 +115,11 @@ export function ChatProvider({ children }: ChatProviderProps) {
   };
 
   const selectUser = (user: User | null) => {
-    setSelectedUser(user);
+    if(user){
+      setSelectedUser(user);
+    }
   };
-  
+
   if (!userId) {
     return <div>User ID is required</div>;
   }
@@ -136,6 +139,7 @@ export function ChatProvider({ children }: ChatProviderProps) {
         selectUser,
         activeTab,
         setActiveTab,
+        userId
       }}>
         {children}
       </ChatContext.Provider>
