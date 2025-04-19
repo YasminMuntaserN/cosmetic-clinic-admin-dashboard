@@ -1,3 +1,4 @@
+
 export interface MedicalHistory {
     condition : string;
     diagnosis : string;
@@ -28,4 +29,5 @@ export interface Patient {
     emergencyContact:string;
     createdAt: string;
     updatedAt: string;
+    userId?: string;
 }
