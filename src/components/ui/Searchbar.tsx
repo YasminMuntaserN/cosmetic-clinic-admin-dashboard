@@ -1,13 +1,13 @@
 import { Search } from "lucide-react";
 import { useLocation } from "react-router-dom";
-import { useSearch } from "../../context/SearchContext.tsx";
+import { useClinic } from "../../context/ClinicContext.tsx";
 import { useEffect, useState } from "react";
 import { useDebounce } from "../../hooks/useDebounce.ts";
 
 export function Searchbar() {
     const location = useLocation();
     const pageName = location.pathname.toString();
-    const { setSearch } = useSearch();
+    const { setSearch } = useClinic();
     const [searchTerm, setSearchTerm] = useState("");
     const debouncedSearchTerm = useDebounce(searchTerm);
 
