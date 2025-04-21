@@ -49,7 +49,6 @@ export function Settings() {
         }
     ];
 
-
     return (
         <ProfileLayout
             title={`Dr. ${doctor.firstName} ${doctor.lastName}`}

@@ -5,6 +5,7 @@ import {Modal} from "../components/ui/Modal.tsx";
 import {Appointment} from "../types/Appointment.ts";
 import {Loading} from "../components/ui/Loading.tsx";
 import {ErrorMessage} from "../components/ui/ErrorMessage.tsx";
+import {PageLayout} from "../components/ui/PageLayout.tsx";
 
 export function Appointments() {
     const {getAppointments, Appointments, error, isLoading} = useAppointments();
@@ -14,14 +15,17 @@ export function Appointments() {
         getAppointments()
     }, []);
 
-    if (error) return <ErrorMessage />;
-    
+    if (error) return <ErrorMessage/>;
+
     return (
-        <Modal action={()=>setSelectedAppointment(null)}>
-            {isLoading ? <Loading />:
-            <Calendar selectedAppointment={selectedAppointment} setSelectedAppointment={setSelectedAppointment} appointments={Appointments ?? []}/>
-            }
+        <PageLayout>
+            <Modal action={() => setSelectedAppointment(null)}>
+                {isLoading ? <Loading/> :
+                    <Calendar selectedAppointment={selectedAppointment} setSelectedAppointment={setSelectedAppointment}
+                              appointments={Appointments ?? []}/>
+                }
             </Modal>
-    )
-        ;
+        </PageLayout>
+
+    );
 }

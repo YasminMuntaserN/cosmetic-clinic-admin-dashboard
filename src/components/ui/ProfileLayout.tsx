@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui/Button';
+import {PageLayout} from "./PageLayout.tsx";
 
 interface ProfileAction {
     icon: ReactNode;
@@ -41,7 +42,7 @@ export function ProfileLayout({
     const navigate = useNavigate();
 
     return (
-        <div>
+        <PageLayout>
             <div className="flex gap-5 m-5">
                 <Button
                     variant="SquareDashedButton"
@@ -89,6 +90,6 @@ export function ProfileLayout({
                     {children}
                 </div>
             </div>
-        </div>
+        </PageLayout>
     );
 }

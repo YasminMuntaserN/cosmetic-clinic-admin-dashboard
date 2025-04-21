@@ -1,5 +1,6 @@
 import {Controller, useFormContext} from "react-hook-form";
 import {Clock} from "lucide-react";
+import {DAYS_OF_WEEK} from "../../utils/constants.ts";
 
 interface WorkingHours {
     dayOfWeek: number;
@@ -8,19 +9,10 @@ interface WorkingHours {
     isWorking: boolean;
 }
 
-
-const DAYS_OF_WEEK = [
-    {label: 'Monday', value: 1},
-    {label: 'Tuesday', value: 2},
-    {label: 'Wednesday', value: 3},
-    {label: 'Thursday', value: 4},
-    {label: 'Sunday', value: 0},
-];
-
 export function WorkingHoursInput() {
     const {control, watch} = useFormContext();
     const workingHours = watch('workingHours');
-
+    
     const validateTimes = (day: WorkingHours) => {
         if (!day.isWorking) return true;
         if (!day.startTime || !day.endTime) return false;
@@ -45,7 +37,7 @@ export function WorkingHoursInput() {
                                         <input
                                             type="checkbox"
                                             {...field}
-                                            checked={field.value}
+                                            checked={workingHours[index]?.isWorking || false}
                                             className="w-4 h-4 accent-basic"
                                         />
                                         <span className="text-gray-700 text-sm ">{day.label}</span>
@@ -54,7 +46,7 @@ export function WorkingHoursInput() {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <div className="flex-1 grid sm:grid-cols-2 gap-4">
+                            <div className="grid sm:grid-cols-2 gap-7">
                                 <Controller
                                     name={`workingHours.${index}.startTime`}
                                     control={control}
@@ -63,8 +55,8 @@ export function WorkingHoursInput() {
                                         <input
                                             type="time"
                                             {...field}
-                                            disabled={!workingHours[index].isWorking}
-                                            className="block w-full px-3 py-2 border border-gray-300 rounded-md disabled:cursor-not-allowed"
+                                            disabled={!workingHours[index]?.isWorking}
+                                            className="block w-full lg:w-[80px] text-xs py-2 border border-gray-300 rounded-md disabled:cursor-not-allowed"
                                         />
                                     )}
                                 />
@@ -77,14 +69,14 @@ export function WorkingHoursInput() {
                                         <input
                                             type="time"
                                             {...field}
-                                            disabled={!workingHours[index].isWorking}
-                                            className="block w-full px-3 py-2 border border-gray-300 rounded-md disabled:cursor-not-allowed"
+                                            disabled={!workingHours[index]?.isWorking}
+                                            className="block  w-full lg:w-[80px] text-xs py-2 border border-gray-300 rounded-md disabled:cursor-not-allowed"
                                         />
                                     )}
                                 />
                             </div>
 
-                            {workingHours[index].isWorking && !validateTimes(workingHours[index]) && (
+                            {workingHours[index]?.isWorking && !validateTimes(workingHours[index]) && (
                                 <p className="text-sm text-red-600">Please set valid start and end times</p>
                             )}
                         </div>
