@@ -10,6 +10,10 @@ interface UserContextType {
     setSelectedUserId:(id: string) => void;
     selectedUser :User | null;
     setSelectedUser:(user: User | null) => void;
+    clinicName :string;
+    setClinicName:(clinicName: string) => void;
+    clinicAddress :string;
+    setClinicAddress:(clinicName: string) => void;
 }
 
 interface Search {
@@ -24,9 +28,14 @@ export function ClinicProvider({ children }: { children: React.ReactNode }) {
     const [search, setSearch] = useState<Search>({term: "", entity: ""});
     const [selectedUserId, setSelectedUserId] = useState<string>("");
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
+    const [clinicName ,setClinicName] = useState("Yara Choice");
+    const [clinicAddress ,setClinicAddress ]= useState("United Arab Emirates _ Abu Dhabi _ Corniche Street");
 
     return (
-        <ClinicContext.Provider value={{category, setCategory ,search, setSearch ,selectedUserId, setSelectedUserId ,selectedUser, setSelectedUser}}>
+        <ClinicContext.Provider value={{
+            category, setCategory ,search, setSearch ,
+            selectedUserId, setSelectedUserId ,selectedUser, setSelectedUser,
+            clinicName ,setClinicName ,clinicAddress ,setClinicAddress}}>
             {children}
         </ClinicContext.Provider>
     );

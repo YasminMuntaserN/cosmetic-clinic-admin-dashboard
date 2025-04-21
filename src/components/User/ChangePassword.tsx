@@ -6,11 +6,11 @@ import toast from "react-hot-toast";
 import {Loading} from "../ui/Loading.tsx";
 import {ErrorMessage} from "../ui/ErrorMessage.tsx";
 
-type PasswordForm = {
+interface PasswordForm  {
     currentPassword: string;
     password: string;
     confirmPassword: string;
-};
+}
 
 export function ChangePassword({userId}: { userId: string | undefined }) {
     const {

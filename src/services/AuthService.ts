@@ -12,12 +12,10 @@ const removeTokens = () => {
     localStorage.removeItem('refreshToken');
 };
 
-
  export const getStoredTokens = () => ({
     accessToken: localStorage.getItem('accessToken'),
     refreshToken: localStorage.getItem('refreshToken'),
 });
-
 
 export async function refreshAccessToken() {
     try {

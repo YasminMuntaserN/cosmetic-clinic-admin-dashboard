@@ -9,6 +9,7 @@ import {AddModal} from "../components/ui/AddModal.tsx";
 import {Modal} from "../components/ui/Modal.tsx";
 import {AddEditDoctorForm} from "../components/Doctors/AddEditDoctorForm.tsx";
 import {ErrorMessage} from "../components/ui/ErrorMessage.tsx";
+import {PageLayout} from "../components/ui/PageLayout.tsx";
 
 
 export function Doctors() {
@@ -57,28 +58,31 @@ export function Doctors() {
         setCurrentPage(1);
     };
 
-    if (error || SearchedDoctorsError) return <ErrorMessage />;
+    if (error || SearchedDoctorsError) return <ErrorMessage/>;
 
     return (
-        <Modal>
-            <div className="container mx-auto">
-                <DoctorList
-                    doctors={doctorList || []}
-                    totalCount={totalCount ?? 0}
-                    onPageChange={setCurrentPage}
-                    onSort={handleSort}
-                    currentPage={currentPage}
-                    pageSize={PAGE_SIZE}
-                    isLoading={isLoading || SearchedDoctorsLoading}
-                />
-            </div>
-            <Modal.Open opens="addDoctor" >
-               <AddModal/>
-            </Modal.Open>
-            
-            <Modal.Window name="addDoctor">
-                <AddEditDoctorForm />
-            </Modal.Window>
-        </Modal>
+        <PageLayout>
+            <Modal>
+                <div className="container mx-auto">
+                    <DoctorList
+                        doctors={doctorList || []}
+                        totalCount={totalCount ?? 0}
+                        onPageChange={setCurrentPage}
+                        onSort={handleSort}
+                        currentPage={currentPage}
+                        pageSize={PAGE_SIZE}
+                        isLoading={isLoading || SearchedDoctorsLoading}
+                    />
+                </div>
+                <Modal.Open opens="addDoctor">
+                    <AddModal/>
+                </Modal.Open>
+
+                <Modal.Window name="addDoctor">
+                    <AddEditDoctorForm/>
+                </Modal.Window>
+            </Modal>
+        </PageLayout>
+
     );
 }

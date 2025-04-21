@@ -1,18 +1,9 @@
-import axios from "axios";
 import {PaginatedResponse, Pagination, SearchCriteria} from "../types/Pagination.ts";
+import {apiClient} from "../utils/constants.ts";
 
-//const AUTH_TOKEN = localStorage.getItem('accessToken');
-const AUTH_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiI2N2RiNDQ1ZDhhNjhmYzBkOWMxNDMyZTEiLCJlbWFpbCI6InlhcmFAZ21haWwuY29tIiwicm9sZSI6IkFkbWluIiwiUGVybWlzc2lvbnMiOiI0MTk0MzAzIiwibmJmIjoxNzQzODg1MDExLCJleHAiOjE3NDM4OTIyMTEsImlhdCI6MTc0Mzg4NTAxMSwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3QiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUxNzMvIn0.w6lnIGqp46XEdGkeSWXnFcOnXsPrGZPRUUWpLNjsViE";
-const apiClient = axios.create({
-    baseURL: "http://localhost:5030/api",
-    headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": `Bearer ${AUTH_TOKEN}`,
-    },
-});
 
 export async function addEntity(entityName:string,data:any) {
+    const AUTH_TOKEN = localStorage.getItem('accessToken');
     try {
         const response = await apiClient.post( `/${entityName}`, data, {
             headers: {
@@ -29,8 +20,26 @@ export async function addEntity(entityName:string,data:any) {
 }
 
 export async function UpdateEntity(entityName:string,Id:string,data:any) {
+    const AUTH_TOKEN = localStorage.getItem('accessToken');
     try {
         const response = await apiClient.put( `/${entityName}/${Id}`, data, {
+            headers: {
+                Authorization: `Bearer ${AUTH_TOKEN}`,
+                Accept: "text/plain",
+            },
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Error adding doctor:", error);
+        throw error;
+    }
+}
+
+export async function ChangePassword(userId:string,currentPassword:string ,newPassword:string) {
+    const AUTH_TOKEN = localStorage.getItem('accessToken');
+    try {
+        const response = await apiClient.put( `/Users?userId=${userId}&currentPassword=${currentPassword}&newPassword=${newPassword}`, {
             headers: {
                 Authorization: `Bearer ${AUTH_TOKEN}`,
                 Accept: "text/plain",
@@ -47,6 +56,7 @@ export async function UpdateEntity(entityName:string,Id:string,data:any) {
 export async function paginatedList(
     entityName: string,
     pagination: Pagination): Promise<PaginatedResponse> {
+    const AUTH_TOKEN = localStorage.getItem('accessToken');
     try {
         const response = await apiClient.get<PaginatedResponse>(
             `/${entityName}/paginated?PageNumber=${pagination.PageNumber}&PageSize=${pagination.PageSize}&OrderBy=${pagination.OrderBy}`,{
@@ -65,6 +75,7 @@ export async function paginatedList(
 }
 
 export async function getAll<T>(entityName: string): Promise<T[]> {
+    const AUTH_TOKEN = localStorage.getItem('accessToken');
     try {
         const response = await apiClient.get<T[]>(`/${entityName}`,
             {
@@ -82,6 +93,7 @@ export async function getAll<T>(entityName: string): Promise<T[]> {
 }
 
 export async function getAllSelectorData<T>(entityName: string): Promise<T[]> {
+    const AUTH_TOKEN = localStorage.getItem('accessToken');
     try {
         const response = await apiClient.get<T[]>(`/${entityName}`,
             {
@@ -99,6 +111,7 @@ export async function getAllSelectorData<T>(entityName: string): Promise<T[]> {
 }
 
 export async function getAllBy<T>(entityName: string, value: string): Promise<T[]> {
+    const AUTH_TOKEN = localStorage.getItem('accessToken');
     try {
         const response = await apiClient.get<T[]>(
             `/${entityName}/${value}`,
@@ -116,7 +129,27 @@ export async function getAllBy<T>(entityName: string, value: string): Promise<T[
     }
 }
 
+export async function getById<T>(entityName: string, Id: string): Promise<T> {
+    const AUTH_TOKEN = localStorage.getItem('accessToken');
+    try {
+        const response = await apiClient.get<T>(
+            `/${entityName}/${Id}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${AUTH_TOKEN}`,
+                    Accept: "text/plain",
+                },
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error(`Error fetching ${entityName} with Id:`, error);
+        throw error;
+    }
+}
+
 export async function Search<T>( entityName:string ,searchCriteria :SearchCriteria): Promise<T[]> {
+    const AUTH_TOKEN = localStorage.getItem('accessToken');
     try {
         const response = await apiClient.post<T[]>(`/${entityName}/search`, searchCriteria,
             {
@@ -130,6 +163,23 @@ export async function Search<T>( entityName:string ,searchCriteria :SearchCriter
         return response.data;
     } catch (error) {
         console.error(`Error searching ${entityName}:`, error);
+        throw error;
+    }
+}
+
+export async function deleteEntity(entityName:string,id:any) {
+    const AUTH_TOKEN = localStorage.getItem('accessToken');
+    try {
+        const response = await apiClient.delete( `/${entityName}/${id}`, {
+            headers: {
+                Authorization: `Bearer ${AUTH_TOKEN}`,
+                Accept: "text/plain",
+            },
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Error deleting doctor:", error);
         throw error;
     }
 }

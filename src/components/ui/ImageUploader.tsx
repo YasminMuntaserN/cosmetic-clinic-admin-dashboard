@@ -1,11 +1,11 @@
 import React, {useState, useRef, useEffect} from "react";
 import {ImageUp} from "lucide-react";
 
-type ImageUploaderProps = {
+interface ImageUploaderProps {
     onFileSelected: (file: File) => void;
     name: string;
     defaultImage?:string;
-};
+}
 
 export function ImageUploader({onFileSelected ,name="Profile" ,defaultImage}: ImageUploaderProps) {
     const [preview, setPreview] = useState<string | null>(null);
