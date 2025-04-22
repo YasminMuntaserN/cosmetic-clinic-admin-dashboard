@@ -60,7 +60,6 @@ export function Calendar({appointments, selectedAppointment, setSelectedAppointm
 
     const handleEventClick = (info: any) => {
         
-        // Don't open edit modal if clicking delete button
         if (info.jsEvent.target.closest('.delete-button')) {
             return;
         }

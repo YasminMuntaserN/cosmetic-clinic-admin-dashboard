@@ -11,7 +11,7 @@ export function DoctorCard({ doctor }: DoctorCardProps) {
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 lg:gap-10 p-4">
-            <div className="relative aspect-w-16 aspect-h-9 md:aspect-w-3 md:aspect-h-2">
+            <div className="relative h-72">
                 <img
                     className="w-full h-full object-cover rounded-lg shadow-md"
                     src={doctor.imageUrl}
@@ -28,7 +28,7 @@ export function DoctorCard({ doctor }: DoctorCardProps) {
                 </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
                 <h3 className="text-xl md:text-2xl font-bold text-gray-900 truncate">
                     {fullName}
                 </h3>
@@ -49,7 +49,7 @@ export function DoctorCard({ doctor }: DoctorCardProps) {
                             <Clock10 className="h-4 w-4 text-gray-400" />
                             <span>Schedule:</span>
                         </div>
-                        <ul className="ml-6 space-y-1 text-sm text-gray-500">
+                        <ul className="ml-6 space-y-2 text-sm text-gray-500">
                             {doctor.workingHours.slice(0, 2).map((slot, index) => (
                                 <li key={index} className="flex justify-between">
                                     <span>{["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][slot.dayOfWeek]}</span>
@@ -60,7 +60,7 @@ export function DoctorCard({ doctor }: DoctorCardProps) {
                     </div>
                 </div>
 
-                <DoctorOperationButtons doctorId={doctor.id} />
+                <DoctorOperationButtons doctor={doctor} />
             </div>
         </div>
     );

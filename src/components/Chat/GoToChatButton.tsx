@@ -6,11 +6,16 @@ import {useNavigate} from "react-router-dom";
 import {ReactNode} from "react";
 import {ButtonLoader} from "../ui/Loading.tsx";
 import {ErrorMessage} from "../ui/ErrorMessage.tsx";
+import {useUser  as getAdmin} from "../../context/UserContext.tsx";
 
-export function GoToChatButton({ButtonStyle ,text} :{ButtonStyle?:ButtonVariant , text?:ReactNode} ) {
-    const {setSelectedUser ,selectedUserId } =useClinic();
+
+export function GoToChatButton({ButtonStyle ,text ,userId} :{ButtonStyle?:ButtonVariant , text?:ReactNode ,userId?:string} ) {
+    const {setSelectedUser ,selectedUserId :contextUserId } =useClinic();
     const { getUser, isLoading, error}  =useUser();
     const navigate = useNavigate();
+    const {user} =getAdmin();
+    const selectedUserId =userId ?userId : contextUserId;
+    
     
     const handleChat =()=>{
         if(selectedUserId) {
@@ -19,7 +24,8 @@ export function GoToChatButton({ButtonStyle ,text} :{ButtonStyle?:ButtonVariant 
                 {
                     onSuccess: (data: User) => {
                         setSelectedUser(data);
-                        navigate(`/chat/67db445d8a68fc0d9c1432e1`)
+                        if(user)
+                        navigate(`/chat/${user?.id}`)
                     },
                     onError: (error) => console.error("Update failed:", error),
                 });
