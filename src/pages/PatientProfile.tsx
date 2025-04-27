@@ -28,8 +28,7 @@ export function PatientProfile() {
             });
         }
     }, [patientId, getPatient, setSelectedUserId]);
-
-    if (error) return <ErrorMessage />;
+    
     if (isLoading) return <Loading />;
     if (!patient) return null;
 
@@ -73,6 +72,7 @@ export function PatientProfile() {
             selectedAction={dataToShow}
             onActionChange={setDataToShow}
         >
+            { error && <ErrorMessage/>}
             {dataToShow === "Personal Info" && <PersonalInfo patient={patient}/>   }
             {dataToShow === "Appointments" &&  <PatientAppointments patientId={patient.id}/>  }
             {dataToShow === "Medical Record" &&  <MedicalRecord patient={patient}/>  }

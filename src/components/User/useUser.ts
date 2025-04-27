@@ -1,5 +1,5 @@
 import {useMutation} from "@tanstack/react-query";
-import {ChangePassword, getById} from "../../services/BaseApi.ts";
+import {ChangePassword, getBy, getById} from "../../services/BaseApi.ts";
 import {User} from "../../types/User.ts";
 
 export function useUser() {
@@ -34,6 +34,24 @@ export function useChangePassword() {
     return {
         getChangePassword,
         result: data ?? [],
+        isLoading:status === "pending",
+        error
+    }
+}
+
+export function useUnreadMessagesCount(){
+    const {
+        mutate: getUnreadMessagesCount,
+        data,
+        status,
+        error,
+    } =useMutation({
+        mutationFn :({id}:{id:string})=>getBy("Chat" , "unread-count" ,`?userId=${id}`),
+        mutationKey :["unreadMessagesCount"],
+    });
+    return {
+        getUnreadMessagesCount,
+        count: data ?? [],
         isLoading:status === "pending",
         error
     }

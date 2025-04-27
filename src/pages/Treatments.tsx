@@ -74,11 +74,10 @@ export function Treatments() {
         setCurrentPage(1);
     };
 
-    if (error || TreatmentsCategoryError || SearchedTreatmentsError) return <ErrorMessage/>;
-
     return (
         <PageLayout>
             <Modal>
+                {(error || TreatmentsCategoryError || SearchedTreatmentsError) && <ErrorMessage/>}
                 <div className="space-y-6">
                     <TreatmentList
                         treatments={TreatmentsList ?? []}

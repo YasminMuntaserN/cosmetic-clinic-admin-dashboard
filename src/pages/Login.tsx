@@ -5,7 +5,7 @@ import {Button} from "../components/ui/Button.tsx";
 import {useLogin} from "../hooks/useLogin.ts";
 import toast from "react-hot-toast";
 import {useNavigate} from "react-router-dom";
-import {Loading} from "../components/ui/Loading.tsx";
+import {ButtonLoader} from "../components/ui/Loading.tsx";
 import {AuthResponse} from "../types/login.ts";
 import {useUser} from "../context/UserContext.tsx";
 
@@ -21,7 +21,7 @@ export function Login() {
         checkLogin({email: data.email , password : data.password} ,{
             onSuccess:(data :AuthResponse )=> {
                 toast.success(`Welcome back ${data.userDTO.firstName} ${data.userDTO.lastName}`);
-                loginUser(data.userDTO);
+                loginUser(data.userDTO , data.accessToken ,data.refreshToken) ;
                 reset();
                 navigate('/dashboard');
             },
@@ -32,11 +32,10 @@ export function Login() {
         })
     };
     
-    if(isLoading) return <Loading />;
     
     return (
         <div className="bg-gray-700 h-screen flex justify-center items-center font-slab p-5">
-            <div className="bg-white z-1000 rounded-3xl shadow-lg m-auto w-full lg:w-1/4 p-10">
+            <div className={`bg-white z-1000 rounded-3xl shadow-lg m-auto w-full lg:w-1/4 p-10  ${isLoading ? "opacity-20 " : ""} `}>
                 <Logo />
                 <div className="border-b-2 border-basic mb-5 p-2 text-center">
                     <h1 className="text-3xl font-bold text-secondary ">Login</h1>
@@ -45,10 +44,11 @@ export function Login() {
                 <form className="flex flex-col space-y-6 justify-between" onSubmit={handleSubmit(onSubmit)}>
                 <TextInput control={control} name="email" placeholder="Email" required />
                  <TextInput    control={control}
+                               type="password"
                                label="Password"
                                name="password"
                                placeholder="Password"/>
-                    <Button type="submit">Login</Button>
+                    <Button type="submit">{isLoading ?<> <ButtonLoader/> loading... </>:"Login"}</Button>
                 </form>
             </div>
         </div>

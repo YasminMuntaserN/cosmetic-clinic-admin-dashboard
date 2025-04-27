@@ -83,7 +83,7 @@ function Window({ children, name }: WindowProps) {
     if (name !== openName) return null;
 
     return createPortal(
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 ">
             <div className="min-h-screen px-4 text-center">
                 {/* Background overlay */}
                 <div className="fixed inset-0" onClick={close} />

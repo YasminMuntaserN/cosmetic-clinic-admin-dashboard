@@ -27,8 +27,7 @@ export function DoctorProfile() {
             });
         }
     }, [doctorId, getDoctor, setSelectedUserId]);
-
-    if (error) return <ErrorMessage />;
+    
     if (isLoading) return <Loading/>;
     if (!doctor) return null;
 
@@ -67,6 +66,7 @@ export function DoctorProfile() {
             selectedAction={dataToShow}
             onActionChange={setDataToShow}
         >
+            { error && <ErrorMessage/>}
             {dataToShow === "Personal Info" && <PersonalInfo doctor={doctor}/>}
             {dataToShow === "Appointments" && <DoctorAppointments doctorId={doctor.id}/>}
             {dataToShow === "Change Password" && <ChangePassword userId={doctor.userId}/>}

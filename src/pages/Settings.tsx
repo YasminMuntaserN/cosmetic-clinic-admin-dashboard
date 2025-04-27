@@ -26,8 +26,7 @@ export function Settings() {
             });
         }
     }, [doctorId, getDoctor, setSelectedUserId]);
-
-    if (error) return <ErrorMessage />;
+    
     if (isLoading) return <Loading/>;
     if (!doctor) return null;
 
@@ -61,10 +60,11 @@ export function Settings() {
             actions={profileActions}
             primaryAction={<GoToChatButton text={<><MessageSquareShare className="mr-2"/> Start Chat </>}
                                            ButtonStyle="fullBackground"/>}
-            backTo="/dashbord"
+            backTo="/dashboard"
             selectedAction={dataToShow}
             onActionChange={setDataToShow}
         >
+            { error && <ErrorMessage/>}
             {dataToShow === "Clinic Info" && <ClinicInfo/>}
             {dataToShow === "Personal Info" && <PersonalInfo doctor={doctor}/>}
             {dataToShow === "Change Password" && <ChangePassword userId={doctor.userId}/>}

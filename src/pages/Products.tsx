@@ -12,6 +12,7 @@ import {AddModal} from "../components/ui/AddModal.tsx";
 import {AddEditProductForm} from "../components/Products/AddEditProductForm.tsx";
 import {useClinic} from "../context/ClinicContext.tsx";
 import {ErrorMessage} from "../components/ui/ErrorMessage.tsx";
+import {PageLayout} from "../components/ui/PageLayout.tsx";
 
 
 export function Products() {
@@ -75,28 +76,31 @@ export function Products() {
         setCurrentPage(1);
     };
 
-    if (error || productsCategoryError || SearchedProductsError) return <ErrorMessage />;
 
     return (
-        <Modal>
-            <div className="space-y-6">
-                <ProductList
-                    products={ProductsList ?? []}
-                    totalPages={totalPages ?? 0}
-                    onPageChange={setCurrentPage}
-                    onSort={handleSort}
-                    currentPage={currentPage}
-                    isLoading={isLoading || productsCategoryLoading || SearchedProductsLoading}
-                />
-            </div>
-            <Modal.Open opens="addProduct">
-                <AddModal/>
-            </Modal.Open>
-            
-            <Modal.Window name="addProduct">
-                <AddEditProductForm />
-            </Modal.Window>
-            
-        </Modal>
+        <PageLayout>
+            <Modal>
+                {(error || productsCategoryError || SearchedProductsError) && <ErrorMessage/>}
+                <div className="space-y-6">
+                    <ProductList
+                        products={ProductsList ?? []}
+                        totalPages={totalPages ?? 0}
+                        onPageChange={setCurrentPage}
+                        onSort={handleSort}
+                        currentPage={currentPage}
+                        isLoading={isLoading || productsCategoryLoading || SearchedProductsLoading}
+                    />
+                </div>
+                <Modal.Open opens="addProduct">
+                    <AddModal/>
+                </Modal.Open>
+
+                <Modal.Window name="addProduct">
+                    <AddEditProductForm/>
+                </Modal.Window>
+
+            </Modal>
+        </PageLayout>
+
     );
 }

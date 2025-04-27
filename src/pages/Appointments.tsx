@@ -16,11 +16,11 @@ export function Appointments() {
     useEffect(() => {
         getAppointments()
     }, []);
-
-    if (error) return <ErrorMessage/>;
+    
 
     return (
         <PageLayout>
+            { error && <ErrorMessage/>}
             <Modal action={() => setSelectedAppointment(null)}>
                 {isLoading ? <Loading/> :
                     <Calendar selectedAppointment={selectedAppointment} setSelectedAppointment={setSelectedAppointment}

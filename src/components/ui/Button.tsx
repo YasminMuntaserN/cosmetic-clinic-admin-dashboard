@@ -8,7 +8,7 @@ type ButtonProps = ComponentProps<'button'> & {
 };
 
 const BUTTON_STYLES = {
-    default: "bg-secondary text-basic w-full py-2 px-4 rounded-md font-slab ",
+    default: "bg-secondary text-basic w-full py-2 px-4 rounded-md font-slab flex justify-center gap-3 ",
     dashedBasic: "border-2 border-dashed border-basic text-basic px-4 py-2 font-slab",
     dashedSecondary: "flex gap-3 border-2 border-dashed border-secondary text-secondary px-4 py-2 font-slab",
     fullBorder: "flex border-2 border-primary w-full py-2 px-4 rounded-md font-bold text-secondary justify-center font-slab",

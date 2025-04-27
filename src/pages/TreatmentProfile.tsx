@@ -24,7 +24,6 @@ export function TreatmentProfile() {
         }
     }, [treatmentId, getTreatment]);
     
-    if (error ) return <ErrorMessage />;
     if (isLoading ) return <Loading />;
     if (!treatment) return null;
 
@@ -50,6 +49,7 @@ export function TreatmentProfile() {
             updatedAt={treatment.updatedAt}
             createdAt={treatment.createdAt}
         >
+            { error && <ErrorMessage/>}
             {showPatiens ?
                 <div>
                     <X className="cursor-pointer" onClick={() => setShowPatiens((pre)=>!pre)}/>

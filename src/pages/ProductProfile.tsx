@@ -24,7 +24,6 @@ export function ProductProfile() {
         }
     }, [productId, getProduct]);
 
-    if (error) return  <ErrorMessage />;
     if (isLoading) return <Loading />;
     if (!product) return null;
 
@@ -54,7 +53,7 @@ export function ProductProfile() {
             createdAt={product.createdAt}
         >
 
-
+            { error && <ErrorMessage/>}
             <section className="border-2 rounded-lg shadow-lg p-6">
                 <h2 className="text-lg font-semibold flex items-center gap-2 mb-4">
                     <Info className="w-5 h-5"/>
