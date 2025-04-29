@@ -2,7 +2,7 @@ import axios from "axios";
 import {getTokens} from "../services/AuthService.ts";
 
 export const apiClient = axios.create({
-    baseURL: "http://clinc.runasp.net/api",
+    baseURL: "https://clinc.runasp.net/api",
     headers: {
         "Content-Type": "application/json",
         "Accept": "text/plain",

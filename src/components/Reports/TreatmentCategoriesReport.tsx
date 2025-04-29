@@ -37,7 +37,7 @@ function TreatmentCategoriesReport() {
                         fill="#8884d8"
                         dataKey="value"
                     >
-                        {TreatmentCategoriesReport?.map((entry, index) => (
+                        {TreatmentCategoriesReport?.map((_, index) => (
                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]}/>
                         ))}
                     </Pie>
