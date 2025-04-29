@@ -5,6 +5,9 @@ import {useChangePassword} from "./useUser.ts";
 import toast from "react-hot-toast";
 import {Loading} from "../ui/Loading.tsx";
 import {ErrorMessage} from "../ui/ErrorMessage.tsx";
+import {usePermission} from "./hooks/usePermission.ts";
+import {Permission} from "../../types/Permission.ts";
+import PermissionGuard from "./PermissionGuard.tsx";
 
 interface PasswordForm  {
     currentPassword: string;
@@ -29,7 +32,7 @@ export function ChangePassword({userId}: { userId: string | undefined }) {
         })
         reset();
     };
-
+    const hasRequiredPermission =usePermission(Permission.ManageUsers);
     const password = watch("password");
 
     if(error) return <ErrorMessage />;
@@ -44,6 +47,7 @@ export function ChangePassword({userId}: { userId: string | undefined }) {
                 label="Current Password"
                 name="currentPassword"
                 placeholder="Current Password"
+                disabled={!hasRequiredPermission}
                 value="Password"
             />
             
@@ -52,6 +56,7 @@ export function ChangePassword({userId}: { userId: string | undefined }) {
                 type="password"
                 label="New Password"
                 name="password"
+                disabled={!hasRequiredPermission}
                 rules={{
                     required: "Password is required",
                     minLength: {
@@ -70,14 +75,16 @@ export function ChangePassword({userId}: { userId: string | undefined }) {
                 type="password"
                 label="Confirm Password"
                 name="confirmPassword"
+                disabled={!hasRequiredPermission}
                 rules={{
                     required: "Please confirm your password",
                     validate: value =>
                         value === password || "Passwords do not match"
                 }}
             />
-
-            <Button type="submit">Save Changes</Button>
+            <PermissionGuard permission={Permission.ManageUsers}>
+                <Button type="submit">Save Changes</Button>  
+            </PermissionGuard>
         </form>
     );
 }

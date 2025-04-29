@@ -1,9 +1,13 @@
 import {WorkHours} from "../Dashboard/WorkHours.tsx";
 import {Activity, FolderPen, MapPin} from "lucide-react";
 import {useClinic} from "../../context/ClinicContext.tsx";
+import {usePermission} from "../User/hooks/usePermission.ts";
+import {Permission} from "../../types/Permission.ts";
 
 export function ClinicInfo() {
     const {clinicName ,setClinicName , clinicAddress ,setClinicAddress}=useClinic();
+    const hasRequiredPermission =usePermission(Permission.ManageUsers);
+    
     
     return (
         <div className="flex space-y-6 flex-col">
@@ -19,8 +23,9 @@ export function ClinicInfo() {
                         <label className="block text-sm font-medium text-gray-700"> Clinic Name</label>
                         <input
                             type="text"
-                            className="mt-1 w-full p-2 border-b-2 rounded-md text-gray-500 text-sm focus:outline-basic"
+                            className="mt-1 w-full p-2 border-b-2 rounded-md text-gray-500 text-sm focus:outline-basic disabled:cursor-not-allowed"
                             defaultValue={clinicName}
+                            disabled={!hasRequiredPermission}
                             onChange={(e)=>setClinicName(e.target.value)}
                         />
                     </div>
@@ -29,8 +34,9 @@ export function ClinicInfo() {
                         <MapPin size={14} className="text-gray-700"/>
                         <label className="block text-sm font-medium text-gray-700"> Address</label>
                         <textarea
-                            className="mt-1 w-full p-2 border-b-2 rounded-md text-gray-500 text-sm focus:outline-basic"
+                            className="mt-1 w-full p-2 border-b-2 rounded-md text-gray-500 text-sm focus:outline-basic disabled:cursor-not-allowed"
                             defaultValue={clinicAddress}
+                            disabled={!hasRequiredPermission}
                             onChange={(e)=>setClinicAddress(e.target.value)}
                         />
                     </div>

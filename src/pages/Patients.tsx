@@ -57,11 +57,11 @@ export function Patients() {
         setAscending(isAscending);
         setCurrentPage(1);
     };
-
-    if (error || SearchedPatientsError) return <ErrorMessage/>;
+    
 
     return (
         <PageLayout>
+            { (error || SearchedPatientsError) && <ErrorMessage/>}
             <Modal>
                 <div className="container mx-auto">
                     <PatientList

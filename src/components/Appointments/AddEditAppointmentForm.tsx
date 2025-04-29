@@ -9,6 +9,9 @@ import {TimeInput} from "../ui/TimeInput.tsx";
 import AddPatientForAppointment from "./AddPatientForAppointment.tsx";
 import {GoToChatButton} from "../Chat/GoToChatButton.tsx";
 import {ErrorMessage} from "../ui/ErrorMessage.tsx";
+import PermissionGuard from "../User/PermissionGuard.tsx";
+import {Permission} from "../../types/Permission.ts";
+import {usePermission} from "../User/hooks/usePermission.ts";
 
 interface AddEditAppointmentFormProps {
     selectedAppointment?: Appointment | null;
@@ -49,8 +52,10 @@ export function AddEditAppointmentForm({
     const {register, handleSubmit,  formState: {errors}} =methods;
     const {updateAppointment, isLoading: updating, error: updateError} = useUpdateAppointment();
     const {AddAppointment, isLoading: Adding, error: AddError} = useAddAppointment();
-
+    const hasPermission = usePermission(isAdd ? Permission.CreateAppointment : Permission.MangeAppointment);
     const onSubmit = (data: any) => {
+        if(hasPermission) return;
+        
         if (isAdd) {
             const newAppointment = {
                 patientId: data?.Patients,
@@ -187,10 +192,12 @@ export function AddEditAppointmentForm({
                             className={StyledInput}
                         />
                     </div>
+                    <PermissionGuard permission={isAdd ? Permission.CreateAppointment : Permission.MangeAppointment}>
+                        <Button type="submit">
+                            {(updating || Adding) ? "loading..." : isAdd ? "Add Appointment" : "Save Changes"}
+                        </Button>
+                    </PermissionGuard>
 
-                    <Button type="submit">
-                        {(updating || Adding) ? "loading..." : isAdd ? "Add Appointment" : "Save Changes"}
-                    </Button>
                 </form>
             </div>
         </FormProvider>

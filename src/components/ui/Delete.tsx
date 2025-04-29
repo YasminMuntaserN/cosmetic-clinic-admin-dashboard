@@ -7,6 +7,9 @@ import {useDeletePatient} from "../Patients/hooks/usePatient.ts";
 import {useNavigate} from "react-router-dom";
 import {useDeleteDoctor} from "../Doctors/hooks/useDoctor.ts";
 import {useDeleteAppointment} from "../Appointments/hooks/useAppointment.ts";
+import PermissionGuard from "../User/PermissionGuard.tsx";
+import {Permission} from "../../types/Permission.ts";
+import {usePermission} from "../User/hooks/usePermission.ts";
 
 
 interface DeleteProps {
@@ -47,11 +50,26 @@ export function Delete({id,  dataType, onClose } :DeleteProps) {
         doctor: deleteDoctor,
         appointment :deleteAppointment
     };
-    
+    const deletePermission = () => {
+        switch (dataType) {
+            case "product" :
+                return Permission.DeleteProduct;
+            case "treatment":
+                return Permission.DeleteTreatment;
+            case "patient" :
+                return Permission.DeletePatient;
+            case "doctor" :
+                return Permission.DeleteDoctor;
+            case "appointment":
+                return Permission.CancelAppointment;
+        }
+    }
+    const hasPermission = usePermission(deletePermission());
     const handleDelete = () => {
+        if(!hasPermission) return;
+        
         const deleteFn = deleteActions[dataType];
         if (!deleteFn) return;
-
         deleteFn(
             { id },
             {
@@ -79,9 +97,12 @@ export function Delete({id,  dataType, onClose } :DeleteProps) {
                 This action cannot be undone. All data related to this {dataType} will be permanently deleted.
             </p>
             <div className="flex justify-center gap-4 mt-4">
-                <Button variant="DeleteButton" onClick={handleDelete}>
-                    {productDeleting || treatmentDeleting || patientDeleting || doctorDeleting || appointmentDeleting ? "Deleting..." :"Delete" }
-                </Button>
+                <PermissionGuard
+                    permission={deletePermission()}>
+                    <Button variant="DeleteButton" onClick={handleDelete}>
+                        {productDeleting || treatmentDeleting || patientDeleting || doctorDeleting || appointmentDeleting ? "Deleting..." :"Delete" }
+                    </Button>
+                </PermissionGuard>
                 <Button variant="CancleButton" onClick={onClose}>
                     Cancel
                 </Button>

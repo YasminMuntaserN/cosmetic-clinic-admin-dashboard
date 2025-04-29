@@ -13,7 +13,12 @@ import {useUser} from "../context/UserContext.tsx";
 export function Login() {
     const {checkLogin, isLoading } =useLogin();
     const {loginUser} =useUser();
-    const methods =useForm();
+    const methods = useForm({
+        defaultValues: {
+            email: '',
+            password: ''
+        }
+    });
     const { control ,handleSubmit ,reset} = methods;
     const navigate = useNavigate();
     
@@ -35,19 +40,29 @@ export function Login() {
     
     return (
         <div className="bg-gray-700 h-screen flex justify-center items-center font-slab p-5">
-            <div className={`bg-white z-1000 rounded-3xl shadow-lg m-auto w-full lg:w-1/4 p-10  ${isLoading ? "opacity-20 " : ""} `}>
+            <div className={`bg-white z-1000 rounded-3xl shadow-lg m-auto w-full lg:w-1/4 p-10 `}>
                 <Logo />
                 <div className="border-b-2 border-basic mb-5 p-2 text-center">
                     <h1 className="text-3xl font-bold text-secondary ">Login</h1>
                     <p className="text-gray-500 "> please Enter Your credentials </p>
                 </div>
                 <form className="flex flex-col space-y-6 justify-between" onSubmit={handleSubmit(onSubmit)}>
-                <TextInput control={control} name="email" placeholder="Email" required />
+                <TextInput
+                               control={control}
+                               name="email"
+                               label="Email"
+                               placeholder="Email"
+                               disabled={isLoading}
+                               required />
+                    
                  <TextInput    control={control}
                                type="password"
                                label="Password"
                                name="password"
-                               placeholder="Password"/>
+                               disabled={isLoading}
+                               placeholder="Password"
+                               required
+                 />
                     <Button type="submit">{isLoading ?<> <ButtonLoader/> loading... </>:"Login"}</Button>
                 </form>
             </div>

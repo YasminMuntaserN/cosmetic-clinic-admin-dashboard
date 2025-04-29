@@ -5,10 +5,10 @@ import {Delete} from "./Delete.tsx";
 interface DeleteModalProps {
     id: string;
     button: ReactNode;
-    dataType: "product" | "treatment" |"patient" |"doctor" |"appointment";
+    dataType: "product" | "treatment" | "patient" | "doctor" | "appointment";
 }
 
-export function DeleteModal({ id, button, dataType }: DeleteModalProps) {
+export function DeleteModal({id, button, dataType}: DeleteModalProps) {
     return (
         <Modal>
             <Modal.Open opens={`delete-${dataType}`}>
@@ -16,7 +16,7 @@ export function DeleteModal({ id, button, dataType }: DeleteModalProps) {
             </Modal.Open>
 
             <Modal.Window name={`delete-${dataType}`}>
-                 <Delete  id={id} dataType={dataType}  />
+                <Delete id={id} dataType={dataType}/>
             </Modal.Window>
         </Modal>
     );

@@ -11,7 +11,8 @@ function UnreadMessagesCount() {
     
     useEffect(() => {
         if(user)
-        getUnreadMessagesCount({ id:  user.id})} ,[])
+        getUnreadMessagesCount({ id:  user.id})} ,[]);
+    
     return (
         <button
             type="button"
@@ -21,8 +22,7 @@ function UnreadMessagesCount() {
             <Bell className="h-6 w-6" aria-hidden="true"/>
             <span className="absolute top-2.5 -right-2.5 font-semibold bg-basic rounded-full px-1.5 py-0.5 text-xs text-white text-center">{count}</span>
         </button>
-)
-    ;
+);
 }
 
 export default UnreadMessagesCount;

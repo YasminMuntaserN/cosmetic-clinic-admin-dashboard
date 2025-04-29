@@ -34,4 +34,4 @@ export default function TextInput<T extends ElementType = 'input'>({
 }
 
 const StyledLabel = "block text-sm m-2 mt-4";
-const StyledInput = "mt-1 w-full p-2 border rounded-md text-gray-500 text-sm focus:outline-basic";
+const StyledInput = "mt-1 w-full p-2 border rounded-md text-gray-500 text-sm focus:outline-basic disabled:cursor-not-allowed";

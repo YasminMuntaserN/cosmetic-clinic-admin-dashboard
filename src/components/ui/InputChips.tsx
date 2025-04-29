@@ -1,21 +1,27 @@
 import {Dispatch, SetStateAction, useEffect, useState} from "react";
 import { Minus, X } from "lucide-react";
 import toast from "react-hot-toast";
+import {useClinic} from "../../context/ClinicContext.tsx";
 
 interface InputChipsProps {
     name: string;
     handleData:Dispatch<SetStateAction<string[]>> | any;
     data:string[];
     required?: boolean;
+    addMode?: boolean;
 }
 
 export function InputChips({ name ,data ,handleData ,required}: InputChipsProps) {
+    const {formMode} =useClinic();
     const [inputValue, setInputValue] = useState<string>("");
     const [isShown, setIsShown] = useState<boolean>(false);
     
+    console.log(formMode);
+    console.log(formMode.isAdd);
+    
     useEffect(() => {
         if(required){
-            if(data.length === 0 ){
+            if(data.length === 0 && !formMode.isAdd){
                if(inputValue === "" ) {
                    toast.error(`Please enter  at least one ${name}`);
                }}}

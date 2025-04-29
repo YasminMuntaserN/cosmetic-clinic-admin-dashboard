@@ -15,7 +15,7 @@ function UserHeader() {
         >
             <span className="sr-only">View profile</span>
             <User className="h-7 w-7 text-basic" aria-hidden="true"/>
-            {!isMobile && <span className="text-sm mt-1 text-gray-500 font-bold">Dr. {user?.firstName} {user?.lastName}</span>}
+            {!isMobile && <span className="text-sm mt-1 text-gray-500 font-bold">welcome , {user?.firstName} {user?.lastName}</span>}
         </button>
     );
 }

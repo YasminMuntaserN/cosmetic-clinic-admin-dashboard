@@ -1,6 +1,6 @@
 import ChatsList from './ChatsList';
 import ChatArea from './ChatArea';
-import { useChat } from '../../context/ChatContext';
+import {useChat} from '../../context/ChatContext';
 import Tabs from "../ui/Tabs.tsx";
 import UsersList from "./UsersList.tsx";
 import {SearchUsers} from "./SearchUsers.tsx";
@@ -9,6 +9,7 @@ import {PageLayout} from "../ui/PageLayout.tsx";
 
 export function ChatPanel() {
     const { selectedUser, activeTab } = useChat();
+    
     return (
         <PageLayout>
             <div className="flex flex-col lg:flex-row h-screen bg-gray-100">

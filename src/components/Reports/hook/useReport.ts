@@ -53,3 +53,16 @@ export function useStockQuantityReport(){
         error
     }
 }
+
+export function useCountStats(){
+    const { mutate :getCountStats, data, status, error } =useMutation({
+        mutationFn:() :Promise<Report[]>=>getAllBy("Users" ,"counts"),
+        mutationKey:["StatsCount"]
+    });
+    return {
+        getCountStats ,
+        CountStats :data ,
+        isLoading : status === "pending" ,
+        error
+    }
+}

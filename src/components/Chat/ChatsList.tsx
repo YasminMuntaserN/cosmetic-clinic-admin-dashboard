@@ -4,6 +4,7 @@ import {useChat} from "../../context/ChatContext.tsx";
 import {useEffect} from "react";
 import {Avatar} from "../ui/Avatar.tsx";
 
+
 function ChatsList() {
     const { filteredConversations, selectedUser, selectUser,messages ,markMessageAsRead  } = useChat();
     
@@ -16,6 +17,8 @@ function ChatsList() {
             });
         }
     }, [selectedUser, messages, markMessageAsRead]);
+    
+    
     
     return (
         <div className="overflow-y-auto h-[calc(100vh-8rem)]">

@@ -1,20 +1,54 @@
-import { Users, UserRound, Calendar, Package } from 'lucide-react';
+import {Users, UserRound, Calendar, Package, LucideIcon ,Syringe} from 'lucide-react';
+import {useCountStats} from "../Reports/hook/useReport.ts";
+import {ErrorMessage} from "../ui/ErrorMessage.tsx";
+import {Loading} from "../ui/Loading.tsx";
+import {useEffect} from "react";
 
-const statsInfo = [
-  { name: 'Total Doctors', value: '12', icon: Users, change: '+2', changeType: 'increase' },
-  { name: 'Active Patients', value: '240', icon: UserRound, change: '+30', changeType: 'increase' },
-  { name: 'Appointments Today', value: '18', icon: Calendar, change: '-2', changeType: 'decrease' },
-  { name: 'Products in Stock', value: '45', icon: Package, change: '+5', changeType: 'increase' },
-];
+interface Stats {
+  name: string;
+  icon: LucideIcon;
+  value: number;
+}
+
+function getData(name: string, isIcon: true): LucideIcon;
+function getData(name: string, isIcon?: false): string;
+
+function getData(name: string, isIcon?: boolean): string | LucideIcon {
+  switch (name) {
+    case "appointments":
+      return isIcon ? Calendar : "Appointments Today";
+    case "doctors":
+      return isIcon ? Users : "Total Doctors";
+    case "patients":
+      return isIcon ? UserRound : "Active Patients";
+    case "products":
+      return isIcon ? Package : "Products in Stock";
+    case "treatments":
+      return isIcon ? Syringe  : "Available Treatments";
+    default:
+      return isIcon ? Calendar : "Unknown";
+  }
+}
 
 export function Stats(){
+  const {getCountStats , CountStats, isLoading , error} =useCountStats();
+  useEffect(() =>getCountStats() ,[])
+  
+  const statsInfo: Stats[] = (CountStats ?? []).map((stat) => ({
+    name: getData(stat.name, false),
+    icon: getData(stat.name, true),
+    value: stat.value,
+  }));
+  
   return (
-    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {statsInfo.map((stat) => (
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
+      {error && <ErrorMessage />}
+      {(statsInfo ?? []).map((stat ) => (
           <div
             key={stat.name}
-            className="relative overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:px-6 sm:py-6"
+            className="relative overflow-hidden rounded-lg bg-white px-4 py-5 shadow "
           >
+            {isLoading && <Loading />}
             <dt>
               <div className="absolute rounded-md bg-secondary p-3">
                 <stat.icon className="h-6 w-6 text-basic" aria-hidden="true" />
@@ -23,13 +57,6 @@ export function Stats(){
             </dt>
             <dd className="ml-16 flex items-baseline">
               <p className="text-2xl font-semibold text-gray-900">{stat.value}</p>
-              <p
-                className={`ml-2 flex items-baseline text-sm font-semibold ${
-                  stat.changeType === 'increase' ? 'text-green-600' : 'text-red-600'
-                }`}
-              >
-                {stat.change}
-              </p>
             </dd>
           </div>
         ))}

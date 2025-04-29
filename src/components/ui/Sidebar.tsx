@@ -28,8 +28,12 @@ const navigation = [
 
 export function Sidebar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const {logout} =useUser();
+    const {logout} = useUser();
 
+    const handleLogout = async () => {
+        await logout();
+        setIsMobileMenuOpen(false);
+    }
     return (
         <>
             <button
@@ -69,9 +73,9 @@ export function Sidebar() {
                                             : 'text-gray-700 hover:bg-secondary hover:text-basic'
                                     )
                                 }
-                                onClick={() =>{
-                                    logout();
-                                    setIsMobileMenuOpen(false);}}
+                                onClick={() => {
+                                    setIsMobileMenuOpen(false);
+                                }}
                             >
                                 <item.icon
                                     className="mr-3 h-5 w-5 flex-shrink-0"
@@ -91,9 +95,9 @@ export function Sidebar() {
                                         : 'text-gray-700 hover:bg-secondary hover:text-basic'
                                 )
                             }
-                            onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                            <LogOut 
+
+                            onClick={() =>handleLogout}>
+                            <LogOut
                                 className="mr-3 h-5 w-5 flex-shrink-0"
                                 aria-hidden="true"
                             />

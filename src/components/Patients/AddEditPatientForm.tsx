@@ -1,6 +1,6 @@
 import TextInput from "../ui/TextInput.tsx";
 import {FormProvider, useForm} from "react-hook-form";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {InputChips} from "../ui/InputChips.tsx";
 import {Button} from "../ui/Button.tsx";
 import toast from "react-hot-toast";
@@ -11,21 +11,27 @@ import MedicalHistory from "./MedicalHistory/MedicalHistory.tsx";
 import {Today} from "../../utils/constants.ts";
 import {ButtonLoader} from "../ui/Loading.tsx";
 import {ErrorMessage} from "../ui/ErrorMessage.tsx";
+import {useClinic} from "../../context/ClinicContext.tsx";
+import PermissionGuard from "../User/PermissionGuard.tsx";
+import {Permission} from "../../types/Permission.ts";
+import {usePermission} from "../User/hooks/usePermission.ts";
 
-interface AddEditPatientFormProps{
-    selectedPatient? :Patient;
+interface AddEditPatientFormProps {
+    selectedPatient?: Patient;
     onClose?: () => void
 }
 
-export function AddEditPatientForm({selectedPatient,onClose}:AddEditPatientFormProps) {
-    const isAdd =selectedPatient === undefined ;
-    const [ingredients, setIngredients] = useState<string[]>(selectedPatient ? selectedPatient.allergies :[]);
-    const methods = useForm({defaultValues: {
+export function AddEditPatientForm({selectedPatient, onClose}: AddEditPatientFormProps) {
+    const isAdd = selectedPatient === undefined;
+    const {setFormMode} = useClinic();
+    const [ingredients, setIngredients] = useState<string[]>(selectedPatient ? selectedPatient.allergies : []);
+    const methods = useForm({
+        defaultValues: {
             firstName: selectedPatient?.firstName || '',
             lastName: selectedPatient?.lastName || '',
             email: selectedPatient?.email || '',
             phone: selectedPatient?.phone || '',
-            address : {
+            address: {
                 city: selectedPatient?.address.city || '',
                 postalCode: selectedPatient?.address.postalCode || '',
                 country: selectedPatient?.address.country || '',
@@ -33,21 +39,34 @@ export function AddEditPatientForm({selectedPatient,onClose}:AddEditPatientFormP
                 street: selectedPatient?.address.street || '',
             },
             dateOfBirth: selectedPatient?.dateOfBirth || '',
-            gender:selectedPatient?.gender || '',
-            emergencyContact:selectedPatient?.emergencyContact || '',
-            medicalHistory:selectedPatient?.medicalHistory ||  [{ condition: '', diagnosis: '', diagnosisDate: '', medications: [] }],
-            allergies: selectedPatient?.allergies||[],
-    }});
+            gender: selectedPatient?.gender || '',
+            emergencyContact: selectedPatient?.emergencyContact || '',
+            medicalHistory: selectedPatient?.medicalHistory || [{
+                condition: '',
+                diagnosis: '',
+                diagnosisDate: '',
+                medications: []
+            }],
+            allergies: selectedPatient?.allergies || [],
+        }
+    });
     const {AddPatient, isLoading, error} = useAddPatient();
-    const {UpdatePatient , updating, updateError } =useUpdatePatient();
-    const {control, handleSubmit, register} =methods;
-    
+    const {UpdatePatient, updating, updateError} = useUpdatePatient();
+    const {control, handleSubmit, register} = methods;
+    const hasPermission = usePermission(isAdd ? Permission.CreatePatient: Permission.MangePatient);
+    useEffect(() => {
+        setFormMode({formName: "patient", isAdd})
+    }, [isAdd]);
+
     const onSubmit = async (data: any) => {
-        if(data.gender === null) {
+        if(hasPermission) return;
+        
+        if (data.gender === null) {
             toast.error("Gender is required");
             return;
         }
-        if(isAdd) {
+        if (isAdd) {
+            setFormMode({formName: "patient", isAdd: false});
             const PatientData: Partial<Patient> = {
                 firstName: data.firstName,
                 lastName: data.lastName,
@@ -69,10 +88,10 @@ export function AddEditPatientForm({selectedPatient,onClose}:AddEditPatientFormP
                     toast.error("Patient creation failed");
                 }
             });
-        }else{
+        } else {
             const PatientData: Partial<Patient> = {
-                id:selectedPatient?.id,
-                userId : selectedPatient?.userId,
+                id: selectedPatient?.id,
+                userId: selectedPatient?.userId,
                 firstName: data.firstName,
                 lastName: data.lastName,
                 gender: data.gender,
@@ -83,10 +102,10 @@ export function AddEditPatientForm({selectedPatient,onClose}:AddEditPatientFormP
                 address: data.address,
                 dateOfBirth: data.dateOfBirth,
                 allergies: ingredients,
-                updatedAt:Today,
-                createdAt:selectedPatient?.createdAt,
+                updatedAt: Today,
+                createdAt: selectedPatient?.createdAt,
             };
-            UpdatePatient({id:selectedPatient?.id, data: PatientData}, {
+            UpdatePatient({id: selectedPatient?.id, data: PatientData}, {
                 onSuccess: () => {
                     onClose?.();
                     toast.success("Patient updating successfully");
@@ -99,8 +118,8 @@ export function AddEditPatientForm({selectedPatient,onClose}:AddEditPatientFormP
 
     }
 
-    if (error ||updateError) return <ErrorMessage />;
-    
+    if (error || updateError) return <ErrorMessage/>;
+
     return (
         <FormProvider {...methods}>
             <form className="text-gray-900 font-slab" onSubmit={handleSubmit(onSubmit)}>
@@ -129,7 +148,10 @@ export function AddEditPatientForm({selectedPatient,onClose}:AddEditPatientFormP
                                 label="Phone Number"
                                 name="phone"
                                 rules={{
-                                    pattern: {value: /^\+?[1-9]\d{1,14}$/, message: "Phone number must be in a valid international format"}
+                                    pattern: {
+                                        value: /^\+?[1-9]\d{1,14}$/,
+                                        message: "Phone number must be in a valid international format"
+                                    }
                                 }}
                                 required
                             />
@@ -184,7 +206,7 @@ export function AddEditPatientForm({selectedPatient,onClose}:AddEditPatientFormP
                                 </label>
                             </div>
                         </div>
-                        <InputChips name="Ingredients" handleData={setIngredients} data={ingredients}  required={true}/>
+                        <InputChips name="Ingredients" handleData={setIngredients} data={ingredients} required={true}/>
                     </div>
 
                     <div className="bg-gray-50 rounded-xl shadow-lg w-full p-3 space-y-6 ">
@@ -199,12 +221,14 @@ export function AddEditPatientForm({selectedPatient,onClose}:AddEditPatientFormP
                             <TextInput control={control} label="Country" name="address.country" required/>
                         </fieldset>
                         <MedicalHistory/>
-                        <Button type="submit" disabled={isLoading}>
-                            {isLoading || updating? <>< ButtonLoader /> Loading...</> :isAdd ?"Add Patient":"Save Changes"}
-                        </Button>
+                        <PermissionGuard permission={isAdd ? Permission.CreatePatient : Permission.MangePatient}>
+                            <Button type="submit" disabled={isLoading}>
+                                {isLoading || updating ? <>
+                                    < ButtonLoader/> Loading...</> : isAdd ? "Add Patient" : "Save Changes"}
+                            </Button>
+                        </PermissionGuard>
                     </div>
                 </div>
-
             </form>
         </FormProvider>
     );

@@ -120,3 +120,12 @@ function Window({ children, name }: WindowProps) {
 
 Modal.Open = Open;
 Modal.Window = Window;
+
+export function useModal() {
+    const modalContext = useContext(ModalContext);
+
+    if (!modalContext) {
+        throw new Error("modalContext must be used within a Modal provider");
+    }
+    return modalContext;
+}

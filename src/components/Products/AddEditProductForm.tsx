@@ -2,7 +2,7 @@ import TextInput from "../ui/TextInput.tsx";
 import {useForm} from "react-hook-form";
 import {Product, ProductsOptions} from "../../types/product.ts";
 import {ImageUploader} from "../ui/ImageUploader.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {InputChips} from "../ui/InputChips.tsx";
 import {Button} from "../ui/Button.tsx";
 import {useAddProduct, useUpdateProduct} from "./hooks/useProduct.ts";
@@ -10,6 +10,10 @@ import toast from "react-hot-toast";
 import {uploadImage} from "../../services/SupabaseService.ts";
 import {ButtonLoader} from "../ui/Loading.tsx";
 import {ErrorMessage} from "../ui/ErrorMessage.tsx";
+import {useClinic} from "../../context/ClinicContext.tsx";
+import PermissionGuard from "../User/PermissionGuard.tsx";
+import {Permission} from "../../types/Permission.ts";
+import {usePermission} from "../User/hooks/usePermission.ts";
 
 
 interface AddEditProductFormProps{
@@ -19,10 +23,11 @@ interface AddEditProductFormProps{
 
 export function AddEditProductForm({selectedProduct, onClose}:AddEditProductFormProps) {
     const isAdd = selectedProduct === undefined ;
+    const { setFormMode} =useClinic();
     const [Image, setImage] = useState<File | null>(null);
     const [sideEffects, setSideEffects] = useState<string[]>(selectedProduct?.sideEffects || []);
     const [ingredients, setIngredients] =  useState<string[]>(selectedProduct?.ingredients ||[]);
-   
+    const hasPermission = usePermission(isAdd ? Permission.CreateProduct : Permission.MangeProduct);
     const { control ,handleSubmit,register } =useForm({
         defaultValues:{
             name :selectedProduct?.name || '' ,
@@ -38,8 +43,14 @@ export function AddEditProductForm({selectedProduct, onClose}:AddEditProductForm
     });
     const {AddProduct, isLoading, error } =useAddProduct();
     const { UpdateProduct   , updating, updateError} =useUpdateProduct();
+
+    useEffect(() => {
+        setFormMode({formName:"product" , isAdd})
+    }, [isAdd]);
     
     const onSubmit = async  (data :any) => {
+        if(!hasPermission) return;
+        
         if (isAdd &&!Image) {
             toast.error("Image is required");
             return;
@@ -56,6 +67,7 @@ export function AddEditProductForm({selectedProduct, onClose}:AddEditProductForm
         }
 
         if(isAdd) {
+            setFormMode({formName:"product" , isAdd:false})
             const productData: Partial<Product> = {
                 name: data.name,
                 price: data.price,
@@ -138,9 +150,11 @@ export function AddEditProductForm({selectedProduct, onClose}:AddEditProductForm
                     <InputChips name="Side Effects"  handleData ={setSideEffects} data={sideEffects}  required={true}/>
                     <InputChips name="Ingredients" handleData ={setIngredients} data={ingredients}  required={true}/>
                     <ImageUploader onFileSelected={setImage} name="Product" defaultImage={selectedProduct?.imageUrl}/>
-                    <Button type="submit">
-                        {isLoading ||updating ? <><ButtonLoader /> loading...</> : isAdd ? "Add Product" :"Save changes" }
-                    </Button>
+                    <PermissionGuard permission={isAdd ? Permission.CreateProduct :Permission.MangeProduct}>
+                        <Button type="submit">
+                            {isLoading ||updating ? <><ButtonLoader /> loading...</> : isAdd ? "Add Product" :"Save changes" }
+                        </Button>
+                    </PermissionGuard>
                 </div>
             </div>
         </form>

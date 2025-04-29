@@ -5,7 +5,7 @@ export interface Treatment {
     category: string;
     durationMinutes: number; 
     price: number;
-    requiredEquipment: string[];
+    requiredEquipments: string[];
     preRequisites: string[];
     afterCare: string[];
     risks: string[];

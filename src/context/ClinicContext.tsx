@@ -14,13 +14,18 @@ interface UserContextType {
     setClinicName:(clinicName: string) => void;
     clinicAddress :string;
     setClinicAddress:(clinicName: string) => void;
+    formMode :FormMode;
+    setFormMode:(formMode :FormMode)  =>void;
 }
 
 interface Search {
     term: string ;
     entity : string ;
 }
-
+interface FormMode {
+    formName: string ;
+    isAdd : boolean ;
+}
 const ClinicContext = createContext<UserContextType | undefined>(undefined);
 
 export function ClinicProvider({ children }: { children: React.ReactNode }) {
@@ -30,12 +35,13 @@ export function ClinicProvider({ children }: { children: React.ReactNode }) {
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [clinicName ,setClinicName] = useState("Yara Choice");
     const [clinicAddress ,setClinicAddress ]= useState("United Arab Emirates _ Abu Dhabi _ Corniche Street");
+    const [formMode ,setFormMode ]= useState<FormMode>({formName:"" ,isAdd : false});
 
     return (
         <ClinicContext.Provider value={{
             category, setCategory ,search, setSearch ,
             selectedUserId, setSelectedUserId ,selectedUser, setSelectedUser,
-            clinicName ,setClinicName ,clinicAddress ,setClinicAddress}}>
+            clinicName ,setClinicName ,clinicAddress ,setClinicAddress ,formMode ,setFormMode}}>
             {children}
         </ClinicContext.Provider>
     );

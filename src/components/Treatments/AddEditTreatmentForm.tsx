@@ -1,7 +1,7 @@
 import TextInput from "../ui/TextInput.tsx";
 import {useForm} from "react-hook-form";
 import {ImageUploader} from "../ui/ImageUploader.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {InputChips} from "../ui/InputChips.tsx";
 import {Button} from "../ui/Button.tsx";
 import toast from "react-hot-toast";
@@ -10,6 +10,10 @@ import {CategoriesOptions, Treatment} from "../../types/treatment.ts";
 import {useAddTreatment, useUpdateTreatment} from "./hooks/useTreatment.ts";
 import {ButtonLoader} from "../ui/Loading.tsx";
 import {ErrorMessage} from "../ui/ErrorMessage.tsx";
+import {useClinic} from "../../context/ClinicContext.tsx";
+import PermissionGuard from "../User/PermissionGuard.tsx";
+import {Permission} from "../../types/Permission.ts";
+import {usePermission} from "../User/hooks/usePermission.ts";
 
 interface AddEditTreatmentFormProps{
     selectedTreatment? :Treatment;
@@ -18,14 +22,13 @@ interface AddEditTreatmentFormProps{
 
 export function AddEditTreatmentForm({selectedTreatment,onClose}:AddEditTreatmentFormProps) {
    const isAdd =selectedTreatment === undefined ;
+    const { setFormMode} =useClinic();
     const [Image, setImage] = useState<File | null>(null);
-    
     const [requiredEquipments, setRequiredEquipments] = useState<string[]>(selectedTreatment?.requiredEquipments ?? []);
     const [preRequisites, setPreRequisites] =  useState<string[]>(selectedTreatment?.preRequisites ?? []);
     const [afterCare, setAfterCares] = useState<string[]>(selectedTreatment?.afterCare ?? []);
     const [risks, setRisks] =  useState<string[]>(selectedTreatment?.risks ?? []);
-    
-    
+    const hasPermission = usePermission(isAdd ? Permission.CreateTreatment : Permission.MangeTreatment);
     const { control ,handleSubmit,register } =useForm({
         defaultValues: {
             name :selectedTreatment?.name || '',
@@ -41,8 +44,14 @@ export function AddEditTreatmentForm({selectedTreatment,onClose}:AddEditTreatmen
     });
     const {AddTreatment, isLoading, error } =useAddTreatment();
     const { UpdateTreatment   , updating, updateError} =useUpdateTreatment();
+
+    useEffect(() => {
+        setFormMode({formName:"patient" , isAdd})
+    }, [isAdd]);
     
     const onSubmit = async  (data :any) => {
+        if(hasPermission) return;
+        
         if (isAdd &&!Image) {
             toast.error("Image is required");
             return;
@@ -59,6 +68,7 @@ export function AddEditTreatmentForm({selectedTreatment,onClose}:AddEditTreatmen
         }
       
         if(isAdd) {
+            setFormMode({formName:"treatment" , isAdd:false});
             const TreatmentData: Partial<Treatment> = {
                 name: data.name,
                 price: data.price,
@@ -136,9 +146,11 @@ export function AddEditTreatmentForm({selectedTreatment,onClose}:AddEditTreatmen
                     <InputChips name="PreRequisites" handleData ={setPreRequisites} data={preRequisites}  required={true}/>
                     <InputChips name="After Care"  handleData ={setAfterCares} data={afterCare}  required={true}/>
                     <InputChips name="Risks" handleData ={setRisks} data={risks}  required={true}/>
-                    <Button type="submit">
-                        {isLoading || updating ? <><ButtonLoader />loading...</> : isAdd ?"Add Treatment" : "Save Changes"}
-                    </Button>
+                    <PermissionGuard permission={isAdd ? Permission.CreateTreatment :Permission.MangeTreatment}>
+                        <Button type="submit">
+                            {isLoading || updating ? <><ButtonLoader />loading...</> : isAdd ?"Add Treatment" : "Save Changes"}
+                        </Button>
+                    </PermissionGuard>
                 </div>
             </div>
         </form>

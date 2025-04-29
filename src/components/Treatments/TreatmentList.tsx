@@ -2,6 +2,7 @@ import {CategoriesOptions, Treatment} from "../../types/treatment.ts";
 import {Pagination} from "../ui/Pagination.tsx";
 import {TreatmentItem} from "./TreatmentItem.tsx";
 import {TableControls} from "../ui/TableControls.tsx";
+import {Loading} from "../ui/Loading.tsx";
 
 
 interface TreatmentListProps {
@@ -24,7 +25,7 @@ export function TreatmentList({treatments, currentPage, totalPages, onPageChange
                         <TreatmentItem key={treatment.id} treatment={treatment}/>
                     ))
                 ) : (
-                    <p className="text-gray-600">No treatments available</p>
+                    <Loading />
                 )}
             </div>
             <div className="flex justify-center align-items-center ">

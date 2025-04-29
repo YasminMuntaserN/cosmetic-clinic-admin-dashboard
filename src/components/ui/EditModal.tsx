@@ -13,7 +13,7 @@ export function EditModal({selectedData ,button ,dataType}:EditModalProps) {
     return (
         <Modal>
             <Modal.Open opens={`edit${dataType}`}>
-                <div>{button}</div>
+                    <div>{button}</div>
             </Modal.Open>
             <Modal.Window name={`edit${dataType}`}>
                 {

@@ -135,10 +135,10 @@ export function Table<T>({
                                 {columns.map(column => (
                                     <td
                                         key={column.key}
-                                        className={cn('px-6 py-4 whitespace-nowrap', column.className)}
+                                        className={cn('px-6 py-4 white space-nowrap', column.className)}
                                     >
                                         {column.key === "imageUrl" ? (
-                                            <img className="h-12 w-12 rounded-lg" src={`${(item as any)[column.key]}`}
+                                            <img className="h-10 w-18 rounded-full" src={`${(item as any)[column.key]}`}
                                                  alt=""/>
                                         ) : (
                                             <>{column.render ? column.render(item) : (item as any)[column.key]}

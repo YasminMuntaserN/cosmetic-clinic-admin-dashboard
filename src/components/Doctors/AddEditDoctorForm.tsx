@@ -12,6 +12,9 @@ import {DAYS_OF_WEEK, Today} from "../../utils/constants.ts";
 import {Badge} from "../ui/Badge.tsx";
 import {ButtonLoader} from "../ui/Loading.tsx";
 import {ErrorMessage} from "../ui/ErrorMessage.tsx";
+import PermissionGuard from "../User/PermissionGuard.tsx";
+import {Permission} from "../../types/Permission.ts";
+import {usePermission} from "../User/hooks/usePermission.ts";
 
 interface AddEditDoctorFormProps{
     selectedDoctor? :Doctor;
@@ -35,6 +38,7 @@ export function AddEditDoctorForm({selectedDoctor ,onClose} :AddEditDoctorFormPr
     const [Image, setImage] = useState<File | null>(null);
     const {AddDoctor , isLoading, error } =useAddDoctor();
     const { UpdateDoctor   , updating, updateError} =useUpdateDoctor();
+    const hasPermission = usePermission(isAdd ? Permission.CreateDoctor: Permission.MangeDoctor);
     
     const methods = useForm({
         defaultValues: {
@@ -59,6 +63,8 @@ export function AddEditDoctorForm({selectedDoctor ,onClose} :AddEditDoctorFormPr
     const { control, handleSubmit, watch ,register } = methods;
 
     const onSubmit = async (data: any) => {
+        if(!hasPermission) return;
+        
         if (isAdd && !Image) {
             toast.error("Image is required");
             return;
@@ -208,9 +214,12 @@ export function AddEditDoctorForm({selectedDoctor ,onClose} :AddEditDoctorFormPr
 
                     <div>
                         <WorkingHoursInput/>
-                        <Button type="submit">
-                            {isLoading || updating ?<> <ButtonLoader /> loading .. </>  : isAdd ? "Add Doctor" : "Save Changes"}
-                        </Button>
+                        <PermissionGuard permission={isAdd ? Permission.CreateDoctor : Permission.MangeDoctor}>
+                            <Button type="submit">
+                                {isLoading || updating ?<> <ButtonLoader /> loading .. </>  : isAdd ? "Add Doctor" : "Save Changes"}
+                            </Button>
+                        </PermissionGuard>
+
                     </div>
                 </div>
             </form>

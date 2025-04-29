@@ -27,8 +27,8 @@ export function WorkingHoursInput() {
                     <h1 className="lg:text-2xl font-bold text-gray-900">Working Hours</h1>
                 </div>
                 {DAYS_OF_WEEK.map((day, index) => (
-                    <div key={day.value} className="flex flex-col sm:flex-row sm:items-center rounded-lg gap-5 bg-gray-50">
-                        <div className="w-44">
+                    <div key={day.value} className="flex flex-col sm:flex-row sm:items-center rounded-lg bg-gray-50 px-5">
+                        <div className="w-56">
                             <Controller
                                 name={`workingHours.${index}.isWorking`}
                                 control={control}
@@ -46,7 +46,7 @@ export function WorkingHoursInput() {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <div className="grid sm:grid-cols-2 gap-7">
+                            <div className="grid sm:grid-cols-2 gap-10">
                                 <Controller
                                     name={`workingHours.${index}.startTime`}
                                     control={control}
