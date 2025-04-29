@@ -1,15 +1,36 @@
 import axios from "axios";
-
-export const  AUTH_TOKEN =localStorage.getItem('accessToken');
+import {getTokens} from "../services/AuthService.ts";
 
 export const apiClient = axios.create({
-    baseURL: "http://localhost:5030/api",
+    baseURL: "http://clinc.runasp.net/api",
     headers: {
         "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": `Bearer ${AUTH_TOKEN}`,
+        "Accept": "text/plain",
     },
 });
+
+apiClient.interceptors.request.use(
+    (config) => {
+        const { accessToken } = getTokens();
+        if (accessToken) {
+            config.headers.Authorization = `Bearer ${accessToken}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
+apiClient.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        if (error.response?.status === 401) {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            window.location.href = '/login';
+        }
+        return Promise.reject(error);
+    }
+);
 
 export const PAGE_SIZE = 5;
 export const WORK_HOURS = {

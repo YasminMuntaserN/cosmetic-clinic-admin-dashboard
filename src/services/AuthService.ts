@@ -1,82 +1,119 @@
-import {apiClient, AUTH_TOKEN} from "../utils/constants.ts";
+import {apiClient} from "../utils/constants.ts";
 import {AuthResponse, TokenResponse} from "../types/login.ts";
 
-const storeTokens = (accessToken :string, refreshToken :string) => {
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
-};
+export const storeTokens = (accessToken: string, refreshToken: string) => {
+    if (!accessToken || !refreshToken) {
+        console.error("Attempted to store empty tokens:", { accessToken, refreshToken });
+        return false;
+    }
 
-
-const removeTokens = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-};
-
- export const getStoredTokens = () => ({
-    accessToken: localStorage.getItem('accessToken'),
-    refreshToken: localStorage.getItem('refreshToken'),
-});
-
-export async function refreshAccessToken() {
     try {
-        const { refreshToken } = getStoredTokens();
-        if (!refreshToken) throw new Error('No refresh token available');
-        
-        const response = await apiClient.post( `Auth/refresh-token`, {refreshToken}, {
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+        return true;
+    } catch (error) {
+        console.error("Error storing tokens:", error);
+        return false;
+    }
+};
+
+export const getTokens = () => {
+    try {
+        const accessToken = localStorage.getItem('accessToken');
+        const refreshToken = localStorage.getItem('refreshToken');
+        return { accessToken, refreshToken };
+    } catch (error) {
+        console.error("Error getting tokens:", error);
+        return { accessToken: null, refreshToken: null };
+    }
+};
+
+export const clearTokens = () => {
+    try {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
+        return true;
+    } catch (error) {
+        console.error("Error clearing tokens:", error);
+        return false;
+    }
+};
+
+export const isAuthenticated = () => {
+    const { accessToken } = getTokens();
+    return !!accessToken;
+};
+
+export const login = async (credentials: { email: string; password: string }) => {
+    try {
+        const response = await apiClient.post('/Auth/login', credentials, {
             headers: {
-                Authorization: `Bearer ${AUTH_TOKEN}`,
                 Accept: "text/plain",
             },
         });
 
-        const data :TokenResponse = await response.data;
-        storeTokens(data.accessToken, data.refreshToken);
-        
+        const data: AuthResponse = response.data;
+        const stored = storeTokens(data.accessToken, data.refreshToken);
+
+        if (!stored) {
+            throw new Error("Failed to store authentication tokens");
+        }
+
+        return data;
+    } catch (error) {
+        console.error("Login error:", error);
+        throw error;
+    }
+};
+
+export const refreshToken = async () => {
+    try {
+        const { refreshToken } = getTokens();
+
+        if (!refreshToken) {
+            throw new Error('No refresh token available');
+        }
+
+        const response = await apiClient.post('/Auth/refresh-token', { refreshToken }, {
+            headers: {
+                Accept: "text/plain",
+            },
+        });
+
+        const data: TokenResponse = response.data;
+        const stored = storeTokens(data.accessToken, data.refreshToken);
+
+        if (!stored) {
+            throw new Error("Failed to store refreshed tokens");
+        }
+
         return data.accessToken;
     } catch (error) {
-        console.error("Error for checking credentials :", error);
-        removeTokens();
+        console.error("Token refresh error:", error);
+        clearTokens();
         throw error;
     }
-}
+};
 
-export async function login(data:any) {
+export const logout = async () => {
     try {
-        const response = await apiClient.post( `/Auth/login`, data, {
-            headers: {
-                Authorization: `Bearer ${AUTH_TOKEN}`,
-                Accept: "text/plain",
-            },
-        });
+        const { refreshToken, accessToken } = getTokens();
 
-        const res :AuthResponse = await response.data;
-        storeTokens(res.accessToken, res.refreshToken);
-        return res;
+        if (refreshToken) {
+            await apiClient.post('/Auth/revoke', { refreshToken }, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    Accept: "text/plain",
+                },
+            });
+        }
+
+        return true;
     } catch (error) {
-        console.error("Error for checking credentials :", error);
-        throw error;
+        console.error("Logout error:", error);
+        return false;
+    } finally {
+        clearTokens();
     }
-}
-
-export async function logout() {
-    try {
-        const { refreshToken } = getStoredTokens();
-        if (!refreshToken) throw new Error('No refresh token available');
-        
-        const response = await apiClient.post( `/Auth/revoke`, {refreshToken}, {
-            headers: {
-                Authorization: `Bearer ${AUTH_TOKEN}`,
-                Accept: "text/plain",
-            },
-        });
-
-        return response.data;
-    } catch (error) {
-        console.error("Error for checking credentials :", error);
-        throw error;
-    }finally {
-        removeTokens();
-    }
-}
-
-
+};

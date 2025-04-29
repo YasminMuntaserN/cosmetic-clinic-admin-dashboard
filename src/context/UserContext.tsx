@@ -1,63 +1,91 @@
-import {createContext, ReactNode, useContext, useEffect, useState} from "react";
 import {User} from "../types/User.ts";
+import {createContext, ReactNode, useContext, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
+import {clearTokens, getTokens, isAuthenticated, storeTokens ,logout as apiLogout} from "../services/AuthService.ts";
 
 interface UserContextType {
     user: User | null;
-    accessToken: string | null;
-    loginUser: (userData: User) => void;
-    logout: () => void;
     isAuthenticated: boolean;
+    isLoading: boolean;
+    loginUser: (userData: User, accessToken: string, refreshToken: string) => void;
+    logout: () => Promise<void>;
 }
 
-const UserContext = createContext<UserContextType | undefined>(undefined);
 
+const UserContext = createContext<UserContextType | undefined>(undefined);
 interface UserProviderProps {
     children: ReactNode;
 }
 
 export function UserProvider({ children }: UserProviderProps) {
     const navigate = useNavigate();
-
-    const [user, setUser] = useState<User | null>(() => {
-        const savedUser = localStorage.getItem("user");
-        return savedUser && savedUser !== "undefined"  ? JSON.parse(savedUser) : null;
-    });
-
-    const [accessToken, setAccessToken] = useState<string | null>(() => {
-        return localStorage.getItem("accessToken") || null;
-    });
+    const [isLoading, setIsLoading] = useState(true);
+    const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
-        const token = localStorage.getItem("accessToken");
-        const savedUser = localStorage.getItem("user");
+        const loadUser = () => {
+            try {
+                const { accessToken } = getTokens();
 
-        if (!token || !savedUser) {
-            logout();
-        }
+                if (!accessToken) {
+                    setUser(null);
+                    setIsLoading(false);
+                    return;
+                }
+
+                const savedUser = localStorage.getItem('user');
+
+                if (savedUser && savedUser !== 'undefined') {
+                    setUser(JSON.parse(savedUser));
+                } else {
+                    console.warn('Found access token but no user data');
+                    clearTokens();
+                    setUser(null);
+                }
+            } catch (error) {
+                console.error('Error loading user:', error);
+                clearTokens();
+                setUser(null);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadUser();
     }, []);
 
-    const loginUser = (userData: User) => {
+    const loginUser = (userData: User, accessToken: string, refreshToken: string) => {
+        const stored = storeTokens(accessToken, refreshToken);
+
+        if (!stored) {
+            console.error('Failed to store tokens');
+            return;
+        }
+
+        localStorage.setItem('user', JSON.stringify(userData));
         setUser(userData);
-        localStorage.setItem("user", JSON.stringify(userData));
     };
 
-    const logout = () => {
-        setUser(null);
-        setAccessToken(null);
-        localStorage.removeItem("user");
-        localStorage.removeItem("accessToken");
-        navigate("/login");
+    const logout = async () => {
+        try {
+            await apiLogout();
+            console.log("here in the incorrect method ")
+        } catch (error) {
+            console.error('Error during logout:', error);
+        } finally {
+            setUser(null);
+            navigate('/login');
+        }
     };
 
     return (
         <UserContext.Provider
             value={{
                 user,
-                accessToken,
+                isAuthenticated:isAuthenticated(),
+                isLoading,
                 loginUser,
-                logout,
-                isAuthenticated: !!user && !!accessToken
+               logout,
             }}
         >
             {children}
@@ -67,6 +95,8 @@ export function UserProvider({ children }: UserProviderProps) {
 
 export function useUser(): UserContextType {
     const context = useContext(UserContext);
-    if (!context) throw new Error("useUser must be used within a UserProvider");
+    if (!context) {
+        throw new Error('useUser must be used within a UserProvider');
+    }
     return context;
 }
