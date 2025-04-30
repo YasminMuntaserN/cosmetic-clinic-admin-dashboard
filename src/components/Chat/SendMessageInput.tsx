@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { Send } from 'lucide-react';
 import { useChat } from '../../context/ChatContext';
-import PermissionGuard from "../User/PermissionGuard.tsx";
-import {Permission} from "../../types/Permission.ts";
 
 
 function SendMessageInput() {
@@ -30,16 +28,14 @@ function SendMessageInput() {
         onChange={(e) => setMessage(e.target.value)}
         onKeyPress={(e) => e.key === 'Enter' && handleSend()}
         placeholder="Type a message..."
-        className={`flex-1 px-4 py-2 rounded-full border focus:outline-none focus:ring-2 focus:ring-accent`}
+        className={`flex-1 px-4 py-2 rounded-full border focus:outline-none focus:ring-basic focus:ring-2 focus:ring-accent`}
       />
-        <PermissionGuard permission={Permission.MangeChats }>
             <button
-                onClick={handleSend}
+                onClick={()=>handleSend()}
                 className="p-2 rounded-full hover:bg-gray-100"
             >
                 <Send className="h-5 w-5"/>
             </button>
-        </PermissionGuard>
     </div>
   );
 }

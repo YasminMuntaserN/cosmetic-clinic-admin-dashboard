@@ -54,7 +54,8 @@ export function AddEditAppointmentForm({
     const {AddAppointment, isLoading: Adding, error: AddError} = useAddAppointment();
     const hasPermission = usePermission(isAdd ? Permission.CreateAppointment : Permission.MangeAppointment);
     const onSubmit = (data: any) => {
-        if(hasPermission) return;
+        
+        if(!hasPermission) return;
         
         if (isAdd) {
             const newAppointment = {

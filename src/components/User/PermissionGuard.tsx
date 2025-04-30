@@ -4,7 +4,6 @@ import {usePermission} from "./hooks/usePermission.ts";
 import {LockKeyhole} from "lucide-react";
 
 
-
 interface PermissionGuardProps {
     permission: Permission;
     children: React.ReactNode;
@@ -15,6 +14,8 @@ const PermissionGuard: React.FC<PermissionGuardProps> = ({
                                                              children
                                                          }) => {
     const hasRequiredPermission= usePermission(permission);
+    
+    if(hasRequiredPermission) return children;
     
     return (
         <Modal>

@@ -59,7 +59,7 @@ export function AddEditPatientForm({selectedPatient, onClose}: AddEditPatientFor
     }, [isAdd]);
 
     const onSubmit = async (data: any) => {
-        if(hasPermission) return;
+        if(!hasPermission) return;
         
         if (data.gender === null) {
             toast.error("Gender is required");

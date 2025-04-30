@@ -102,13 +102,16 @@ export function ChatProvider({ children }: ChatProviderProps) {
 
   const sendMessage = async (receiverId: string, content: string) => {
     if (!userId) return;
-    await signalR.sendMessage(receiverId, content);
-    await queryClient.invalidateQueries({
-      queryKey: ['messages', userId, receiverId],
-    });
-    await queryClient.invalidateQueries({ queryKey: ['conversations', userId] });
+    try {
+      await signalR.sendMessage(receiverId, content);
+      await queryClient.invalidateQueries({
+        queryKey: ['messages', userId, receiverId],
+      });
+      await queryClient.invalidateQueries({ queryKey: ['conversations', userId] });
+    } catch (err) {
+      console.error("Failed to send SignalR message:", err);
+    }
   };
-
   const markMessageAsRead = async (messageId: string) => {
     await signalR.markMessageAsRead(messageId);
     await queryClient.invalidateQueries({ queryKey: ['conversations', userId] });

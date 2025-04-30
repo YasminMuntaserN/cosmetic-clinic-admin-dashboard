@@ -50,7 +50,7 @@ export function AddEditTreatmentForm({selectedTreatment,onClose}:AddEditTreatmen
     }, [isAdd]);
     
     const onSubmit = async  (data :any) => {
-        if(hasPermission) return;
+        if(!hasPermission) return;
         
         if (isAdd &&!Image) {
             toast.error("Image is required");

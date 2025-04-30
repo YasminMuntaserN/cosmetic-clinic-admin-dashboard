@@ -15,7 +15,7 @@ interface SignalRContextType {
 
 const SignalRContext = createContext<SignalRContextType | undefined>(undefined);
 
-const HUB_URL = 'http://localhost:5030/chatHub';
+const HUB_URL = 'https://clinc.runasp.net/chatHub';
 
 export function SignalRProvider({ children }: { children: ReactNode }) {
     const hubConnection = useRef<signalR.HubConnection>();
