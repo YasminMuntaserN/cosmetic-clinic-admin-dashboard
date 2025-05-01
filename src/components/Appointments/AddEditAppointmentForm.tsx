@@ -3,7 +3,6 @@ import {FormProvider, useForm} from "react-hook-form";
 import {Selector} from "../ui/Selector.tsx";
 import {useAddAppointment, useUpdateAppointment} from "./hooks/useAppointment.ts";
 import {formatTime, getEndDateTime, getStartDateTime, timeToMinutes} from "../../utils/helper.ts";
-import {Today} from "../../utils/constants.ts";
 import {Button} from "../ui/Button.tsx";
 import {TimeInput} from "../ui/TimeInput.tsx";
 import AddPatientForAppointment from "./AddPatientForAppointment.tsx";
@@ -150,9 +149,14 @@ export function AddEditAppointmentForm({
                             type="date"
                             {...register("scheduledDateTime", {
                                 required: "Please select a date",
-                                validate: (value) => value>= Today || "Date cannot be in the past",
+                                validate: (value) => {
+                                    if (isAdd) {
+                                        const today = new Date().toISOString().split("T")[0];
+                                        return value >= today || "Date cannot be in the past";
+                                    }
+                                    return true;
+                                },
                             })}
-                            min={Today}
                             className={StyledInput}
                         />
                         {errors.scheduledDateTime && (

@@ -24,9 +24,7 @@ export function Selector({dataName, defaultValue}: SelectorProps) {
         getSelectorData(dataName, {
             onSuccess: (data: any[]) => {
                 if (defaultValue) {
-                    console.log(defaultValue)
                     const defaultItem = data.find((x) => getValue(x, dataName) === defaultValue);
-                    console.log(defaultItem)
                     if (defaultItem) {
                         setValue(dataName, defaultItem.id);
                         if (dataName === "Doctors" || dataName === "Patients") {
